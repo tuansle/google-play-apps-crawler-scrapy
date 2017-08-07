@@ -25,6 +25,9 @@ class MySpider(CrawlSpider):
     # init final list
     items = []
 
+    # init filename
+    filename = 1
+
     # r'page/\d+' : regular expression for http://isbullsh.it/page/X URLs
     # Rule(LinkExtractor(allow=(r'apps')),follow=True,callback='parse_link')]
     # r'\d{4}/\d{2}/\w+' : regular expression for http://isbullsh.it/YYYY/MM/title URLs
@@ -87,31 +90,44 @@ class MySpider(CrawlSpider):
                 # except:
                 #     pass
                 # print item
-
                 self.items.append(item)
 
-                # append to file
-                # construct filename
-                filename = str(datetime.datetime.now()).split(" ")[0] + str(datetime.datetime.now()).split(" ")[1][
-                                                                        :2] + ".csv"
-                with open(filename, 'a') as f:
-                    spamwriter = csv.writer(f, delimiter=' ',
-                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
-                    spamwriter.writerow(
-                        [item["Item_name"], item["Updated"], item["Author"], item["Filesize"], item["Downloads"],
-                         item["Version"], item["Compatibility"], item["Content_rating"], item["Genre"], item["Price"],
-                         item["Rating_value"], item["Review_number"], item["Description"], item["IAP"],
-                         item["Developer_badge"], item["Physical_address"], item["Video_URL"], item["Developer_ID"],
-                         item["cover_image"], item["screenshots"], item["package_name"], item["Author_link"]])
+        print len(self.items)
+        if len(self.items) == 5000:
+            filename = str(self.filename) + ".csv"
+            self.filename += 1
+            with open(filename, 'a') as csvfile:
+                fieldnames = ['Video_URL',
+                              'Author',
+                              'Content_rating',
+                              'Version',
+                              'Filesize',
+                              'screenshots',
+                              'Updated',
+                              'Description',
+                              'Review_number',
+                              'Downloads',
+                              'Link',
+                              'Genre',
+                              'Developer_badge',
+                              'Item_name',
+                              'Rating_value',
+                              'package_name',
+                              'IAP',
+                              'Physical_address',
+                              'Author_link',
+                              'Compatibility',
+                              'Developer_ID',
+                              'cover_image',
+                              'Price']
 
-                    # write to file
-                    # f = open("linkfinaltest.txt", "a")
-                    # f.write("%s,%s,%s\n" % item["Item_name"], item["Updated"], item["Author"], item["Filesize"],
-                    #         item["Downloads"], item["Version"], item["Compatibility"], item["Content_rating"],
-                    #         item["Genre"], item["Price"], item["Rating_value"], item["Review_number"],
-                    #         item["Description"], item["IAP"], item["Developer_badge"], item["Physical_address"])
-                    # f.close()
-            return self.items
+                spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
+                spamwriter.writeheader()
+                spamwriter.writerows(self.items)
+                csvfile.close()
+                spamwriter = None
+            self.items = []
+
 
 
 if __name__ == "__main__":
