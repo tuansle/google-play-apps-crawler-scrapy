@@ -75,7 +75,7 @@ class MySpider(CrawlSpider):
             item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract()).encode("utf-8").replace("\n", ". ")
             item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode("utf-8").replace("\n", ". ")
             item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8").replace("\n", ". ")
-            if item["Link"][46:49] == "com":
+            if item["Link"][0:46] == "https://play.google.com/store/apps/details?id=":
                 # split package name out of link
                 try:
                     item["package_name"] = item["Link"].split('=')[1]
