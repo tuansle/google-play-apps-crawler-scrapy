@@ -4,8 +4,8 @@ from scrapy.selector import HtmlXPathSelector
 from items import GplaycrawlerItem
 import urlparse
 from scrapy.crawler import CrawlerProcess
-from scrapy.xlib.pydispatch import dispatcher
-from scrapy import signals
+import datetime
+import csv
 
 
 class MySpider(CrawlSpider):
@@ -44,37 +44,34 @@ class MySpider(CrawlSpider):
             item = GplaycrawlerItem()
             item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract()).encode("utf-8")
             item["Item_name"] = ''.join(titles.xpath('//*[@class="document-title"]/div/text()').extract()).encode(
-                "utf-8")
-            item["Updated"] = ''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract()).encode("utf-8")
-            item["Author"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract()).encode("utf-8")
-            item["Filesize"] = ''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract()).encode("utf-8")
-            item["Downloads"] = ''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract()).encode("utf-8")
-            item["Version"] = ''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract()).encode("utf-8")
+                "utf-8").replace("\n", ". ")
+            item["Updated"] = ''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Author"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Filesize"] = ''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Downloads"] = ''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Version"] = ''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract()).encode("utf-8").replace("\n", ". ")
             item["Compatibility"] = ''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract()).encode(
-                "utf-8")
+                "utf-8").replace("\n", ". ")
             item["Content_rating"] = ''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract()).encode(
-                "utf-8")
+                "utf-8").replace("\n", ". ")
             item["Author_link"] = ''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()).encode(
-                "utf-8")  # TODO: separate links and emails
+                "utf-8").replace("\n", ". ")  # TODO: separate links and emails
             ##        item["Author_link_test"] = titles.xpath('//*[@class="content contains-text-link"]/a/@href').extract()
-            item["Genre"] = ''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract()).encode("utf-8")
+            item["Genre"] = ''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract()).encode("utf-8").replace("\n", ". ")
             item["Price"] = ''.join(titles.xpath(
                 '//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()).encode(
-                "utf-8")  # install mean free
-            item["Rating_value"] = ''.join(titles.xpath('//*[@class="score"]/text()').extract()).encode("utf-8")
-            item["Review_number"] = ''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract()).encode("utf-8")
-            item["Description"] = ''.join(titles.xpath('//*[@jsname="C4s9Ed"]//text()').extract()).encode("utf-8")
-            item["IAP"] = ''.join(titles.xpath('//*[@class="inapp-msg"]/text()').extract()).encode("utf-8")
+                "utf-8").replace("\n", ". ")  # install mean free
+            item["Rating_value"] = ''.join(titles.xpath('//*[@class="score"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Review_number"] = ''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Description"] = ''.join(titles.xpath('//*[@jsname="C4s9Ed"]//text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["IAP"] = ''.join(titles.xpath('//*[@class="inapp-msg"]/text()').extract()).encode("utf-8").replace("\n", ". ")
             item["Developer_badge"] = ''.join(titles.xpath('//*[@class="badge-title"]//text()').extract()).encode(
-                "utf-8")
-            item["Physical_address"] = ''.join(
-                titles.xpath('//*[@class="content physical-address"]/text()').extract()).encode("utf-8")
-            item["Video_URL"] = ''.join(
-                titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract()).encode("utf-8")
-            item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract()).encode("utf-8")
-            item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode(
-                "utf-8")
-            item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8")
+                "utf-8").replace("\n", ". ")
+            item["Physical_address"] = ''.join(titles.xpath('//*[@class="content physical-address"]/text()').extract()).encode("utf-8").replace("\n", ". ")
+            item["Video_URL"] = ''.join(titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract()).encode("utf-8").replace("\n", ". ")
+            item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract()).encode("utf-8").replace("\n", ". ")
+            item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode("utf-8").replace("\n", ". ")
+            item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8").replace("\n", ". ")
             if item["Link"][46:49] == "com":
                 # split package name out of link
                 try:
@@ -82,22 +79,38 @@ class MySpider(CrawlSpider):
                 except Exception as e:
                     print e
                     pass
-                # split website and email address out of author link:
-                try:
-                    item["Author_site"], item["Author_email"] = \
-                        item["Author_link"].split("https://www.google.com/url?q=")[1].split("mailto:")
-                except:
-                    pass
+
+                # # split website and email address out of author link:
+                # try:
+                #     item["Author_site"], item["Author_email"] = \
+                #         item["Author_link"].split("https://www.google.com/url?q=")[1].split("mailto:")
+                # except:
+                #     pass
                 # print item
+
                 self.items.append(item)
 
-                # write to file
-                # f = open("linkfinaltest.txt", "a")
-                # f.write("%s,%s,%s\n" % item["Item_name"], item["Updated"], item["Author"], item["Filesize"],
-                #         item["Downloads"], item["Version"], item["Compatibility"], item["Content_rating"],
-                #         item["Genre"], item["Price"], item["Rating_value"], item["Review_number"],
-                #         item["Description"], item["IAP"], item["Developer_badge"], item["Physical_address"])
-                # f.close()
+                # append to file
+                # construct filename
+                filename = str(datetime.datetime.now()).split(" ")[0] + str(datetime.datetime.now()).split(" ")[1][
+                                                                        :2] + ".csv"
+                with open(filename, 'a') as f:
+                    spamwriter = csv.writer(f, delimiter=' ',
+                                            quotechar='|', quoting=csv.QUOTE_MINIMAL)
+                    spamwriter.writerow(
+                        [item["Item_name"], item["Updated"], item["Author"], item["Filesize"], item["Downloads"],
+                         item["Version"], item["Compatibility"], item["Content_rating"], item["Genre"], item["Price"],
+                         item["Rating_value"], item["Review_number"], item["Description"], item["IAP"],
+                         item["Developer_badge"], item["Physical_address"], item["Video_URL"], item["Developer_ID"],
+                         item["cover_image"], item["screenshots"], item["package_name"], item["Author_link"]])
+
+                    # write to file
+                    # f = open("linkfinaltest.txt", "a")
+                    # f.write("%s,%s,%s\n" % item["Item_name"], item["Updated"], item["Author"], item["Filesize"],
+                    #         item["Downloads"], item["Version"], item["Compatibility"], item["Content_rating"],
+                    #         item["Genre"], item["Price"], item["Rating_value"], item["Review_number"],
+                    #         item["Description"], item["IAP"], item["Developer_badge"], item["Physical_address"])
+                    # f.close()
             return self.items
 
 
