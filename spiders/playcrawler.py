@@ -3,11 +3,13 @@ from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
 from items import GplaycrawlerItem
 import urlparse
+from scrapy.crawler import CrawlerProcess
+
 
 class MySpider(CrawlSpider):
   name = "playcrawler"
   allowed_domains = ["play.google.com"]
-  start_urls = ["https://play.google.com/store/apps/"]
+  start_urls = ["https://play.google.com/store/apps?hl=en"]
   rules = [Rule(LinkExtractor(allow=(r'apps',),deny=(r'reviewId')),follow=True,callback='parse_link')]
     	# r'page/\d+' : regular expression for http://isbullsh.it/page/X URLs
     	#Rule(LinkExtractor(allow=(r'apps')),follow=True,callback='parse_link')]
@@ -34,7 +36,7 @@ class MySpider(CrawlSpider):
         item["Filesize"] = ''.join(titles.select('//*[@itemprop="fileSize"]/text()').extract())
         item["Downloads"] = ''.join(titles.select('//*[@itemprop="numDownloads"]/text()').extract())
         item["Version"] = ''.join(titles.select('//*[@itemprop="softwareVersion"]/text()').extract())
-        item["Compatibility"] = ''.join(titles.select('//*[@itemprop="softwareVersion"]/text()').extract())
+        item["Compatibility"] = ''.join(titles.select('//*[@itemprop="operatingSystems"]/text()').extract())
         item["Content_rating"] = ''.join(titles.select('//*[@itemprop="contentRating"]/text()').extract())
         item["Author_link"] = ''.join(titles.select('//*[@class="dev-link"]/@href').extract())
 ##        item["Author_link_test"] = titles.select('//*[@class="content contains-text-link"]/a/@href').extract()
@@ -48,7 +50,16 @@ class MySpider(CrawlSpider):
         item["Physical_address"] = ''.join(titles.select('//*[@class="content physical-address"]/text()').extract())
         item["Video_URL"] = ''.join(titles.select('//*[@class="play-action-container"]/@data-video-url').extract())
         item["Developer_ID"] = ''.join(titles.select('//*[@itemprop="author"]/a/@href').extract())
-        items.append(item)
-      return items
-      
+        item["cover_image"] = ''.join(titles.select('//*[@class="cover-container"]/img/@src').extract())
+        if item["Link"][46:49] == "com":
+            print item
+            items.append(item)
+        return items
+
+
+if __name__ == "__main__":
+    process = CrawlerProcess({'USER_AGENT': 'Mozilla/5.0 (X11; CrOS armv7l 9280.0.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3007.0 Safari/537.36'})
+    spider = MySpider()
+    process.crawl(spider)
+    process.start()  # the script will block here
 

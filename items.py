@@ -3,8 +3,9 @@
 # See documentation in:
 # http://doc.scrapy.org/topics/items.html
 
-#from scrapy.item import Item, Field
+# from scrapy.item import Item, Field
 import scrapy
+
 
 class GplaycrawlerItem(scrapy.Item):
     # define the fields for your item here like:
@@ -19,7 +20,7 @@ class GplaycrawlerItem(scrapy.Item):
     Compatibility = scrapy.Field()
     Content_rating = scrapy.Field()
     Author_link = scrapy.Field()
-##    Author_link_test = scrapy.Field()
+    ##    Author_link_test = scrapy.Field()
     Genre = scrapy.Field()
     Price = scrapy.Field()
     Rating_value = scrapy.Field()
@@ -30,5 +31,7 @@ class GplaycrawlerItem(scrapy.Item):
     Physical_address = scrapy.Field()
     Video_URL = scrapy.Field()
     Developer_ID = scrapy.Field()
+    # add by Tuan
+    cover_image = scrapy.Field()
 
 
