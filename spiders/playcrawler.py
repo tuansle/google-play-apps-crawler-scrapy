@@ -92,7 +92,6 @@ class MySpider(CrawlSpider):
                 # print item
                 self.items.append(item)
 
-        print len(self.items)
         if len(self.items) == 5000:
             filename = str(self.filename) + ".csv"
             self.filename += 1
