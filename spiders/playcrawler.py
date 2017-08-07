@@ -38,13 +38,13 @@ class MySpider(CrawlSpider):
         item["Version"] = ''.join(titles.select('//*[@itemprop="softwareVersion"]/text()').extract())
         item["Compatibility"] = ''.join(titles.select('//*[@itemprop="operatingSystems"]/text()').extract())
         item["Content_rating"] = ''.join(titles.select('//*[@itemprop="contentRating"]/text()').extract())
-        item["Author_link"] = ''.join(titles.select('//*[@class="dev-link"]/@href').extract())
+        item["Author_link"] = ''.join(titles.select('//*[@class="dev-link"]/@href').extract())  # TODO: separate links and emails
 ##        item["Author_link_test"] = titles.select('//*[@class="content contains-text-link"]/a/@href').extract()
         item["Genre"] = ''.join(titles.select('//*[@itemprop="genre"]/text()').extract())
-        item["Price"] = ''.join(titles.select('//*[@class="price buy id-track-click"]/span[2]/text()').extract())
+        item["Price"] = ''.join(titles.select('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()) #install mean free
         item["Rating_value"] = ''.join(titles.select('//*[@class="score"]/text()').extract())
         item["Review_number"] = ''.join(titles.select('//*[@class="reviews-num"]/text()').extract())
-        item["Description"] = ''.join(titles.select('//*[@class="id-app-orig-desc"]//text()').extract())
+        item["Description"] = ''.join(titles.select('//*[@jsname="C4s9Ed"]//text()').extract())
         item["IAP"] = ''.join(titles.select('//*[@class="inapp-msg"]/text()').extract())
         item["Developer_badge"] = ''.join(titles.select('//*[@class="badge-title"]//text()').extract())
         item["Physical_address"] = ''.join(titles.select('//*[@class="content physical-address"]/text()').extract())
