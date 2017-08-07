@@ -25,32 +25,32 @@ class MySpider(CrawlSpider):
     
   def parse_link(self,response):
       hxs = HtmlXPathSelector(response)
-      titles = hxs.select('/html')
+      titles = hxs.xpath('/html')
       items = []
       for titles in titles :
         item = GplaycrawlerItem()
-        item["Link"] = ''.join(titles.select('head/link[6]/@href').extract())
-        item["Item_name"] = ''.join(titles.select('//*[@class="document-title"]/div/text()').extract())
-        item["Updated"] = ''.join(titles.select('//*[@itemprop="datePublished"]/text()').extract())
-        item["Author"] = ''.join(titles.select('//*[@itemprop="author"]/a/span/text()').extract())
-        item["Filesize"] = ''.join(titles.select('//*[@itemprop="fileSize"]/text()').extract())
-        item["Downloads"] = ''.join(titles.select('//*[@itemprop="numDownloads"]/text()').extract())
-        item["Version"] = ''.join(titles.select('//*[@itemprop="softwareVersion"]/text()').extract())
-        item["Compatibility"] = ''.join(titles.select('//*[@itemprop="operatingSystems"]/text()').extract())
-        item["Content_rating"] = ''.join(titles.select('//*[@itemprop="contentRating"]/text()').extract())
-        item["Author_link"] = ''.join(titles.select('//*[@class="dev-link"]/@href').extract())  # TODO: separate links and emails
-##        item["Author_link_test"] = titles.select('//*[@class="content contains-text-link"]/a/@href').extract()
-        item["Genre"] = ''.join(titles.select('//*[@itemprop="genre"]/text()').extract())
-        item["Price"] = ''.join(titles.select('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()) #install mean free
-        item["Rating_value"] = ''.join(titles.select('//*[@class="score"]/text()').extract())
-        item["Review_number"] = ''.join(titles.select('//*[@class="reviews-num"]/text()').extract())
-        item["Description"] = ''.join(titles.select('//*[@jsname="C4s9Ed"]//text()').extract())
-        item["IAP"] = ''.join(titles.select('//*[@class="inapp-msg"]/text()').extract())
-        item["Developer_badge"] = ''.join(titles.select('//*[@class="badge-title"]//text()').extract())
-        item["Physical_address"] = ''.join(titles.select('//*[@class="content physical-address"]/text()').extract())
-        item["Video_URL"] = ''.join(titles.select('//*[@class="play-action-container"]/@data-video-url').extract())
-        item["Developer_ID"] = ''.join(titles.select('//*[@itemprop="author"]/a/@href').extract())
-        item["cover_image"] = ''.join(titles.select('//*[@class="cover-container"]/img/@src').extract())
+        item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract())
+        item["Item_name"] = ''.join(titles.xpath('//*[@class="document-title"]/div/text()').extract())
+        item["Updated"] = ''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract())
+        item["Author"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract())
+        item["Filesize"] = ''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract())
+        item["Downloads"] = ''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract())
+        item["Version"] = ''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract())
+        item["Compatibility"] = ''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract())
+        item["Content_rating"] = ''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract())
+        item["Author_link"] = ''.join(titles.xpath('//*[@class="dev-link"]/@href').extract())  # TODO: separate links and emails
+##        item["Author_link_test"] = titles.xpath('//*[@class="content contains-text-link"]/a/@href').extract()
+        item["Genre"] = ''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract())
+        item["Price"] = ''.join(titles.xpath('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()) #install mean free
+        item["Rating_value"] = ''.join(titles.xpath('//*[@class="score"]/text()').extract())
+        item["Review_number"] = ''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract())
+        item["Description"] = ''.join(titles.xpath('//*[@jsname="C4s9Ed"]//text()').extract())
+        item["IAP"] = ''.join(titles.xpath('//*[@class="inapp-msg"]/text()').extract())
+        item["Developer_badge"] = ''.join(titles.xpath('//*[@class="badge-title"]//text()').extract())
+        item["Physical_address"] = ''.join(titles.xpath('//*[@class="content physical-address"]/text()').extract())
+        item["Video_URL"] = ''.join(titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract())
+        item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract())
+        item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract())
         if item["Link"][46:49] == "com":
             print item
             items.append(item)
