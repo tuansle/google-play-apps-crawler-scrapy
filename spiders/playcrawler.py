@@ -53,7 +53,18 @@ class MySpider(CrawlSpider):
         item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode("utf-8")
         item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8")
         if item["Link"][46:49] == "com":
-            print item
+            # split package name out of link
+            try:
+                item["package_name"] = item["Link"].split('=')[1]
+            except Exception as e:
+                print e
+                pass
+            # split website and email address out of author link:
+            try:
+                item["Author_site"], item["Author_email"] = item["Author_link"].split("https://www.google.com/url?q=")[1].split("mailto:")
+            except:
+                pass
+            # print item
             items.append(item)
         return items
 

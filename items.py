@@ -34,5 +34,8 @@ class GplaycrawlerItem(scrapy.Item):
     # add by Tuan
     cover_image = scrapy.Field()
     screenshots = scrapy.Field()
+    package_name = scrapy.Field()
+    Author_site = scrapy.Field()
+    Author_email = scrapy.Field()
 
 
