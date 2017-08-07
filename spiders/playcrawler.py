@@ -1,7 +1,7 @@
 from scrapy.contrib.spiders import CrawlSpider, Rule
 from scrapy.contrib.linkextractors import LinkExtractor
 from scrapy.selector import HtmlXPathSelector
-from gplaycrawler.items import GplaycrawlerItem
+from items import GplaycrawlerItem
 import urlparse
 
 class MySpider(CrawlSpider):
@@ -27,7 +27,7 @@ class MySpider(CrawlSpider):
       items = []
       for titles in titles :
         item = GplaycrawlerItem()
-        item["Link"] = ''.join(titles.select('head/link[5]/@href').extract())
+        item["Link"] = ''.join(titles.select('head/link[6]/@href').extract())
         item["Item_name"] = ''.join(titles.select('//*[@class="document-title"]/div/text()').extract())
         item["Updated"] = ''.join(titles.select('//*[@itemprop="datePublished"]/text()').extract())
         item["Author"] = ''.join(titles.select('//*[@itemprop="author"]/a/span/text()').extract())
