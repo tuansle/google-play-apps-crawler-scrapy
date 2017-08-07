@@ -51,6 +51,7 @@ class MySpider(CrawlSpider):
         item["Video_URL"] = ''.join(titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract()).encode("utf-8")
         item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract()).encode("utf-8")
         item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode("utf-8")
+        item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8")
         if item["Link"][46:49] == "com":
             print item
             items.append(item)
