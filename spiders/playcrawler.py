@@ -6,13 +6,19 @@ import urlparse
 from scrapy.crawler import CrawlerProcess
 from scrapy.xlib.pydispatch import dispatcher
 from scrapy import signals
+from scrapy import Request
+from scrapy.http import FormRequest
+import scrapy
 
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
-    allowed_domains = ["play.google.com"]
+    allowed_domains = ["play.google.com", "accounts.google.com"]
     start_urls = ["https://play.google.com/store/apps?hl=en"]
-    rules = [Rule(LinkExtractor(allow=(r'apps',), deny=(r'reviewId')), follow=True, callback='parse_link')]
+    rules = [Rule(LinkExtractor(allow=(r'apps'), deny=(r'reviewId')), follow=True, callback='parse_link')]
+
+    logintry = 1
+    logintry2 = 1
 
     # def __init__(self):
     #     dispatcher.connect(self.crawl_over, signals.spider_closed)
@@ -28,6 +34,44 @@ class MySpider(CrawlSpider):
     # r'page/\d+' : regular expression for http://isbullsh.it/page/X URLs
     # Rule(LinkExtractor(allow=(r'apps')),follow=True,callback='parse_link')]
     # r'\d{4}/\d{2}/\w+' : regular expression for http://isbullsh.it/YYYY/MM/title URLs
+
+    def start_requests(self):
+        yield Request(
+            url='https://accounts.google.com/signin/v2/identifier?continue=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%3Fhl%3Den&followup=https%3A%2F%2Fplay.google.com%2Fstore%2Fapps%3Fhl%3Den&hl=en&passive=1209600&service=googleplay&flowName=GlifWebSignIn&flowEntry=ServiceLogin',
+            callback=self.login)
+
+    def login(self, response):
+        """
+        Insert the email. Next, go to the password page.
+        """
+        if self.logintry <= 2:
+            yield FormRequest.from_response(
+                response,
+                formdata={'identifier': 'downloadxender@gmail.com'},
+                callback=self.login,
+                dont_filter=True)
+            self.logintry += 1
+        else:
+            yield FormRequest.from_response(response, formdata={'identifier': 'downloadxender@gmail.com'},
+                                            dont_filter=True, callback=self.log_password)
+
+    def log_password(self, response):
+        """
+        Enter the password to complete the log in.
+        
+        """
+        if self.logintry2 <= 2:
+            yield FormRequest.from_response(
+                response,
+                formdata={'password': '123gmkhoe'},
+                callback=self.log_password,
+                dont_filter=True)
+            self.logintry2 += 1
+
+        else:
+            yield Request(url = "https://play.google.com/store/apps",
+                                            dont_filter=True, callback=self.parse_link)
+
     def abs_url(url, response):
         """Return absolute link"""
         base = response.xpath('//head/base/@href').extract()
@@ -35,9 +79,11 @@ class MySpider(CrawlSpider):
             base = base[0]
         else:
             base = response.url
-        return urlparse.urljoin(base, url)
+        return base
 
+    link = []
     def parse_link(self, response):
+        print self.abs_url(response)
         hxs = HtmlXPathSelector(response)
         titles = hxs.xpath('/html')
         for titles in titles:
@@ -91,7 +137,7 @@ class MySpider(CrawlSpider):
                 # print item
                 self.items.append(item)
 
-                # write to file
+                # write to file using csvwriter
                 # f = open("linkfinaltest.txt", "a")
                 # f.write("%s,%s,%s\n" % item["Item_name"], item["Updated"], item["Author"], item["Filesize"],
                 #         item["Downloads"], item["Version"], item["Compatibility"], item["Content_rating"],
