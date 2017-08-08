@@ -10,7 +10,7 @@ import csv
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
-    custom_settings = {"DEPTH_LIMIT" : 6,
+    custom_settings = {"DEPTH_LIMIT" : 6, # for 1GB computer
                        "RETRY_TIMES": 2}
 
     allowed_domains = ["play.google.com"]
@@ -95,33 +95,36 @@ class MySpider(CrawlSpider):
                 # print item
                 self.items.append(item)
 
-        if len(self.items) == 5000:
+        if len(self.items) == 4000:    #for 1GB computer
             filename = str(self.filename) + ".csv"
             self.filename += 1
+
+            # field definition
+            fieldnames = ['Video_URL',
+                          'Author',
+                          'Content_rating',
+                          'Version',
+                          'Filesize',
+                          'screenshots',
+                          'Updated',
+                          'Description',
+                          'Review_number',
+                          'Downloads',
+                          'Link',
+                          'Genre',
+                          'Developer_badge',
+                          'Item_name',
+                          'Rating_value',
+                          'package_name',
+                          'IAP',
+                          'Physical_address',
+                          'Author_link',
+                          'Compatibility',
+                          'Developer_ID',
+                          'cover_image',
+                          'Price']
+
             with open(filename, 'a') as csvfile:
-                fieldnames = ['Video_URL',
-                              'Author',
-                              'Content_rating',
-                              'Version',
-                              'Filesize',
-                              'screenshots',
-                              'Updated',
-                              'Description',
-                              'Review_number',
-                              'Downloads',
-                              'Link',
-                              'Genre',
-                              'Developer_badge',
-                              'Item_name',
-                              'Rating_value',
-                              'package_name',
-                              'IAP',
-                              'Physical_address',
-                              'Author_link',
-                              'Compatibility',
-                              'Developer_ID',
-                              'cover_image',
-                              'Price']
 
                 spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
                 spamwriter.writeheader()
