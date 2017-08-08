@@ -10,6 +10,9 @@ import csv
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
+    custom_settings = {"DEPTH_LIMIT" : 6,
+                       "RETRY_TIMES": 2}
+
     allowed_domains = ["play.google.com"]
     start_urls = ["https://play.google.com/store/apps?hl=en"]
     rules = [Rule(LinkExtractor(allow=(r'apps',), deny=(r'reviewId')), follow=True, callback='parse_link')]
