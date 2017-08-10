@@ -211,6 +211,7 @@ def spinrewriter_spinner(filepath):
     reload(sys)
     sys.setdefaultencoding('utf8')
 
+    rewriter = SpinRewriter('tuanlesy@yahoo.com', '282bc94#02746d8_7fbe948?024730d')
 
     fieldnames = ['Video_URL',
                   'Author',
@@ -264,7 +265,7 @@ def spinrewriter_spinner(filepath):
             splitted_words = unicode(" ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i]), errors='replace')
             try:
                 spinned = str(rewriter.unique_variation(splitted_words))
-                # spinned = splitted_words   + "SPINNEDDDDDDDDDDDDD"
+                # spinned = splitted_words   + "SPINNEDDDDDDDDDDDDD" # for testing
                 if len(spinned) > 20:
                     result_spin += spinned
                 else:
@@ -316,16 +317,16 @@ def spinrewriter_spinner(filepath):
             count2 += 1
             print "count2,", count2
 
-            # number of spinned 3.8k
-            print "result spin block", result_spin.count("SPINNEDDDDDDDDDDDDD")
+            # number of spinned 3.8k for testing
+            # print "result spin block", result_spin.count("SPINNEDDDDDDDDDDDDD")
 
-            # with open(filepath + "_spinned", 'w') as csvfile:
-            #     spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
-            #     # spamwriter.writeheader()
-            #     for row in result:
-            #         spamwriter.writerow(row)
-            #     csvfile.close()
-            #     spamwriter = None
+            with open(filepath + "_spinned", 'w') as csvfile:
+                spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
+                # spamwriter.writeheader()
+                for row in result:
+                    spamwriter.writerow(row)
+                csvfile.close()
+                spamwriter = None
 
 
 def xml_writer(dict=None, unit="static/unit.xml", start_id=0):
