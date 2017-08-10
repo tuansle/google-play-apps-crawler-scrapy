@@ -1,15 +1,11 @@
 import os
 from lxml import etree
 import csv
-from shutil import copyfile
-from StringIO import StringIO
 import copy
 import sys
 from wordai.turing import TuringWordAi as wa
 from spinrewriter import SpinRewriter
 from langdetect import detect
-from collections import OrderedDict
-
 
 def parseXML(xmlFile):
     """
@@ -134,9 +130,7 @@ def csv_reader_test(filepath):
     with open(filepath) as csvfile:
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
         for row in reader:
-            print row["Downloads"], len(row["Downloads"])
-            print row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")
-    return reader
+            print row
 
 
 def wordai_spinner(filepath):
@@ -335,13 +329,43 @@ def spinrewriter_spinner(filepath):
                 spamwriter = None
 
 
-def xml_writer(dict=None, unit="static/unit.xml", start_id=0):
+def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
     '''
     Function to read csv file and convert to wp-importable xml file
     Returns
     -------
 
     '''
+    # open CSV file
+    reload(sys)
+    sys.setdefaultencoding('utf8')
+    fieldnames = ['Video_URL',
+                  'Author',
+                  'Content_rating',
+                  'Version',
+                  'Filesize',
+                  'screenshots',
+                  'Updated',
+                  'Description',
+                  'Review_number',
+                  'Downloads',
+                  'Link',
+                  'Genre',
+                  'Developer_badge',
+                  'Item_name',
+                  'Rating_value',
+                  'package_name',
+                  'IAP',
+                  'Physical_address',
+                  'Author_link',
+                  'Compatibility',
+                  'Developer_ID',
+                  'cover_image',
+                  'Price']
+
+    # decide what to spin, add to "to_spin"
+    with open(filepath) as csvfile:
+        reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
 
     # parse template
     tree = etree.parse(unit)  # element tree object
@@ -353,7 +377,7 @@ def xml_writer(dict=None, unit="static/unit.xml", start_id=0):
     # remove dummy
     channel.remove(item)
 
-    for row in dict:
+    for row in reader:
         # print row
 
         # item manipulation
@@ -399,6 +423,6 @@ if __name__ == "__main__":
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # parseXML_test("static/unit.xml")
 
-    spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
-    # csv_reader_test("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    csv_reader_test("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     #
