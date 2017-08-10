@@ -211,7 +211,6 @@ def spinrewriter_spinner(filepath):
     reload(sys)
     sys.setdefaultencoding('utf8')
 
-    rewriter = SpinRewriter('tuanlesy@yahoo.com', '282bc94#02746d8_7fbe948?024730d')
 
     fieldnames = ['Video_URL',
                   'Author',
