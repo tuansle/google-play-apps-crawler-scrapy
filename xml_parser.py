@@ -239,30 +239,32 @@ def spinrewriter_spinner(filepath):
     # decide what to spin, add to "to_spin"
     with open(filepath) as csvfile:
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
-        # countx = 0
         to_spin = ""
         for row in reader:
             if len(row["Description"].split()) > 25 and len(row["Description"].split()) < 4000:
                 try:
                     # only spin if download number >10000
-                    if int(row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 499000:
+                    if row["Downloads"] and int(
+                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
                         # only spin if it is English. temporary turn off
-                        # if detect(row["Description"].split(".", 1)[0]) == 'en':  # only take the first sentence
-                        to_spin += str(row["Description"]).replace("\n", "\/") + "||||||||"
-                        # countx +=1
+                        # print row["Description"]
+                        # if detect(unicode(row["Description"].split(".", 1)[0], errors='ignore')) == 'en':  # only take the first sentence
+                        to_spin += str(row["Description"]).replace("\n", "\|/") + "||||||||"
                         # print countx
                 except Exception as e:
-                    # print e
+                    print e
+                    # if str(e) == "No features in text.":
+                    #     to_spin += str(row["Description"]).replace("\n", "\|/") + "||||||||"
                     continue
 
         # print to_spin
         result_spin = ""
         # spin each 3800 words #TODO not working
         for i in range(1, (len(to_spin.split(" ")) / 3800 + 2)):
-            splitted_words = " ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i])
+            splitted_words = unicode(" ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i]), errors='replace')
             try:
-                # spinned =  str(rewriter.unique_variation(splitted_words))
-                spinned = splitted_words  # + "SPINNEDDDDDDDDDDDDD"
+                spinned = str(rewriter.unique_variation(splitted_words))
+                # spinned = splitted_words   + "SPINNEDDDDDDDDDDDDD"
                 if len(spinned) > 20:
                     result_spin += spinned
                 else:
@@ -270,10 +272,10 @@ def spinrewriter_spinner(filepath):
             except Exception as e:
                 print e
                 result_spin += splitted_words
-                continue
-
-        # number of spinned 3.8k
-        # print "result spin block", result_spin.count("SPINNEDDDDDDDDDDDDD")
+                if str(e) == "Error!!!,  Quota limit for API calls reached.":
+                    break
+                else:
+                    continue
 
         # for i in range(0,len(result_spin.split("----------"))):
         #     print result_spin.split("----------")[i]
@@ -292,42 +294,38 @@ def spinrewriter_spinner(filepath):
             count3 += 1
             print count3
             if len(row["Description"].split()) > 25 and len(row["Description"].split()) < 4000:
-                # try:
-                # only spin if download number >10000
-                if row["Downloads"] and int(
-                        row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 499000:
-                    # only spin if it is English. temporary turn off
-                    # if detect(row["Description"].split(".", 1)[0]) == 'en':  # only take the first sentence
-                    print row["Description"]
-                    row["Description"] = result_spin.split("||||||||")[count].replace("\/", "\n")
-                    print result_spin.split("||||||||")[count].replace("\/", "\n")
-                    count += 1
-                    print "count1,", count
-                    # spinned_content = str(rewriter.unique_variation(row["Description"].replace("\n", "|"))).replace("|", "\n")
-                    # if len(spinned_content) > 20: # to debug: if an error return, skip
-                    #     row["Description"] = spinned_content + ".."
-                    # except Exception as e:
-                    #     print "Error!!!, ", e
-                    #     if e == "Error!!!,  Quota limit for API calls reached.":
-                    #         break
-                    #     else:
-                    #         continue
+                try:
+                    # only spin if download number >10000
+                    if row["Downloads"] and int(
+                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
+                        # only spin if it is English. temporary turn off
+                        # if detect(unicode(row["Description"].split(".", 1)[0], errors='ignore')) == 'en':  # only take the first sentence
+                        print row["Description"]
+                        row["Description"] = result_spin.split("||||||||")[count].replace("\|/", "\n")
+                        print row["Description"]
+                        count += 1
+                        print "count1,", count
+                        # spinned_content = str(rewriter.unique_variation(row["Description"].replace("\n", "|"))).replace("|", "\n")
+                        # if len(spinned_content) > 20: # to debug: if an error return, skip
+                        #     row["Description"] = spinned_content + ".."
+                except Exception as e:
+                    print "Error!!!, ", e
+                    continue
+
             result.append(row)
             count2 += 1
             print "count2,", count2
 
+            # number of spinned 3.8k
+            print "result spin block", result_spin.count("SPINNEDDDDDDDDDDDDD")
 
-            # print len(row["Description"].split()), row["Item_name"], row["Description"]
-
-        print reader
-
-        with open(filepath + "_spinned", 'w') as csvfile:
-            spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
-            # spamwriter.writeheader()
-            for row in result:
-                spamwriter.writerow(row)
-            csvfile.close()
-            spamwriter = None
+            # with open(filepath + "_spinned", 'w') as csvfile:
+            #     spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
+            #     # spamwriter.writeheader()
+            #     for row in result:
+            #         spamwriter.writerow(row)
+            #     csvfile.close()
+            #     spamwriter = None
 
 
 def xml_writer(dict=None, unit="static/unit.xml", start_id=0):
