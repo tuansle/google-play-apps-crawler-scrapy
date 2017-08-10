@@ -245,12 +245,12 @@ def spinrewriter_spinner(filepath):
             if len(row["Description"].split()) > 25 and len(row["Description"].split()) < 4000:
                 try:
                     # only spin if download number >10000
-                    if int(row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
-                        # only spin if it is English
+                    if int(row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 499000:
+                        # only spin if it is English. temporary turn off
                         # if detect(row["Description"].split(".", 1)[0]) == 'en':  # only take the first sentence
-                            to_spin += str(row["Description"]).replace("\n", "||") + "||||||||"
-                            # countx +=1
-                            # print countx
+                        to_spin += str(row["Description"]).replace("\n", "\/") + "||||||||"
+                        # countx +=1
+                        # print countx
                 except Exception as e:
                     # print e
                     continue
@@ -262,7 +262,7 @@ def spinrewriter_spinner(filepath):
             splitted_words = " ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i])
             try:
                 # spinned =  str(rewriter.unique_variation(splitted_words))
-                spinned = splitted_words #+ #"SPINNEDDDDDDDDDDDDD"
+                spinned = splitted_words  # + "SPINNEDDDDDDDDDDDDD"
                 if len(spinned) > 20:
                     result_spin += spinned
                 else:
@@ -271,54 +271,53 @@ def spinrewriter_spinner(filepath):
                 print e
                 result_spin += splitted_words
                 continue
-        # print result_spin
-        # if "SPINNEDDDDDDDDDDDDD" in result_spin:
-            # print "YESSSS"
 
-        #number of spinned 3.8k
-        # print result_spin.count("SPINNEDDDDDDDDDDDDD")
+        # number of spinned 3.8k
+        # print "result spin block", result_spin.count("SPINNEDDDDDDDDDDDDD")
 
         # for i in range(0,len(result_spin.split("----------"))):
         #     print result_spin.split("----------")[i]
 
         print len(result_spin.split("||||||||"))
 
-
     result = []
     with open(filepath) as csvfile:
         count = 0
         count2 = 0
-        count3=0
+        count3 = 0
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
 
         for row in reader:
             # print row
-            count3+=1
+            count3 += 1
             print count3
             if len(row["Description"].split()) > 25 and len(row["Description"].split()) < 4000:
                 # try:
-                    # only spin if download number >10000
-                    if row["Downloads"] and int(row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
-                        # only spin if it is English
-                        # if detect(row["Description"].split(".", 1)[0]) == 'en':  # only take the first sentence
-                            row["Description"] = result_spin.split("||||||||")[count].replace("||", "\n")
-                            count += 1
-                            print "count1,", count
-                            # spinned_content = str(rewriter.unique_variation(row["Description"].replace("\n", "|"))).replace("|", "\n")
-                            # if len(spinned_content) > 20: # to debug: if an error return, skip
-                            #     row["Description"] = spinned_content + ".."
-                # except Exception as e:
-                #     print "Error!!!, ", e
-                #     if e == "Error!!!,  Quota limit for API calls reached.":
-                #         break
-                #     else:
-                #         continue
+                # only spin if download number >10000
+                if row["Downloads"] and int(
+                        row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 499000:
+                    # only spin if it is English. temporary turn off
+                    # if detect(row["Description"].split(".", 1)[0]) == 'en':  # only take the first sentence
+                    print row["Description"]
+                    row["Description"] = result_spin.split("||||||||")[count].replace("\/", "\n")
+                    print result_spin.split("||||||||")[count].replace("\/", "\n")
+                    count += 1
+                    print "count1,", count
+                    # spinned_content = str(rewriter.unique_variation(row["Description"].replace("\n", "|"))).replace("|", "\n")
+                    # if len(spinned_content) > 20: # to debug: if an error return, skip
+                    #     row["Description"] = spinned_content + ".."
+                    # except Exception as e:
+                    #     print "Error!!!, ", e
+                    #     if e == "Error!!!,  Quota limit for API calls reached.":
+                    #         break
+                    #     else:
+                    #         continue
             result.append(row)
-            count2 +=1
-            print "count2," ,count2
+            count2 += 1
+            print "count2,", count2
 
 
-                        # print len(row["Description"].split()), row["Item_name"], row["Description"]
+            # print len(row["Description"].split()), row["Item_name"], row["Description"]
 
         print reader
 
