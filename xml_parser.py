@@ -260,6 +260,7 @@ def spinrewriter_spinner(filepath):
         # print to_spin
         result_spin = ""
         # spin each 3800 words #TODO not working
+        count_spinned = 0
         for i in range(1, (len(to_spin.split(" ")) / 3800 + 2)):
             splitted_words = unicode(" ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i]), errors='replace')
             try:
@@ -269,13 +270,19 @@ def spinrewriter_spinner(filepath):
                     result_spin += spinned
                 else:
                     result_spin += splitted_words
+                count_spinned += 1
             except Exception as e:
                 print e
                 result_spin += splitted_words
+                count_spinned +=1
                 if str(e) == "Error!!!,  Quota limit for API calls reached.":
                     break
                 else:
                     continue
+
+            print count_spinned, "blocks per ", (len(to_spin.split(" ")) / 3800 + 2), "completed"
+
+
 
         # for i in range(0,len(result_spin.split("----------"))):
         #     print result_spin.split("----------")[i]
