@@ -6,6 +6,8 @@ import sys
 from wordai.turing import TuringWordAi as wa
 from spinrewriter import SpinRewriter
 from langdetect import detect
+import slugify
+
 
 def parseXML(xmlFile):
     """
@@ -127,10 +129,56 @@ def csv_reader_test(filepath):
                   'Price']
 
     # open file
+    genre = []
     with open(filepath) as csvfile:
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
         for row in reader:
-            print row
+            genre.append(row["Genre"])
+        print set(genre)
+
+
+def csv_reader_test_genre(filepath):
+    '''
+    read csv file
+    Returns
+    -------
+    a dict
+    '''
+    # field definition
+    fieldnames = ['Video_URL',
+                  'Author',
+                  'Content_rating',
+                  'Version',
+                  'Filesize',
+                  'screenshots',
+                  'Updated',
+                  'Description',
+                  'Review_number',
+                  'Downloads',
+                  'Link',
+                  'Genre',
+                  'Developer_badge',
+                  'Item_name',
+                  'Rating_value',
+                  'package_name',
+                  'IAP',
+                  'Physical_address',
+                  'Author_link',
+                  'Compatibility',
+                  'Developer_ID',
+                  'cover_image',
+                  'Price']
+
+    # open file
+    genre = []
+    for fil in os.listdir(filepath):
+        if fil.endswith("csv"):
+            with open(os.path.join(filepath,fil)) as csvfile:
+                reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
+                for row in reader:
+                    genre.append(row["Developer_badge"].replace("&", "and"))
+
+    print set(genre)
 
 
 def wordai_spinner(filepath):
@@ -189,7 +237,7 @@ def wordai_spinner(filepath):
             print row["Description"]
 
 
-def spinrewriter_spinner(filepath):
+def spinrewriter_spinner(filepath, download_min=99999000):
     '''
     wordai content spinner api
     Parameters
@@ -205,6 +253,7 @@ def spinrewriter_spinner(filepath):
     reload(sys)
     sys.setdefaultencoding('utf8')
 
+    rewriter = SpinRewriter('', '')
 
     fieldnames = ['Video_URL',
                   'Author',
@@ -235,11 +284,12 @@ def spinrewriter_spinner(filepath):
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
         to_spin = ""
         for row in reader:
+            row["Description"] = row["Description"].decode('unicode_escape').encode('ascii','ignore') # stardardize string
             if len(row["Description"].split()) > 25 and len(row["Description"].split()) < 4000:
                 try:
                     # only spin if download number >10000
                     if row["Downloads"] and int(
-                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
+                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > download_min:
                         # only spin if it is English. temporary turn off
                         # print row["Description"]
                         # if detect(unicode(row["Description"].split(".", 1)[0], errors='ignore')) == 'en':  # only take the first sentence
@@ -252,11 +302,12 @@ def spinrewriter_spinner(filepath):
                     continue
 
         # print to_spin
+        print "spinning...", (len(to_spin.split(" ")) / 3900 + 2), "blocks of 3.8k words are going to be spinned"
         result_spin = ""
         # spin each 3800 words #TODO not working
         count_spinned = 0
-        for i in range(1, (len(to_spin.split(" ")) / 3800 + 2)):
-            splitted_words = unicode(" ".join(to_spin.split(" ")[3800 * (i - 1):3800 * i]), errors='replace')
+        for i in range(1, (len(to_spin.split(" ")) / 3900 + 2)):
+            splitted_words = unicode(" ".join(to_spin.split(" ")[3900 * (i - 1):3900 * i]), errors='replace')
             try:
                 spinned = str(rewriter.unique_variation(splitted_words))
                 # spinned = splitted_words   + "SPINNEDDDDDDDDDDDDD" # for testing
@@ -298,7 +349,7 @@ def spinrewriter_spinner(filepath):
                 try:
                     # only spin if download number >10000
                     if row["Downloads"] and int(
-                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > 99000:
+                            row["Downloads"].split(" - ", 1)[0].replace(",", "").replace(" ", "")) > download_min:
                         # only spin if it is English. temporary turn off
                         # if detect(unicode(row["Description"].split(".", 1)[0], errors='ignore')) == 'en':  # only take the first sentence
                         print row["Description"]
@@ -336,6 +387,17 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
     -------
 
     '''
+
+    # parse template
+    tree = etree.parse(unit)  # element tree object
+    root = tree.getroot()
+    channel = root[0]
+
+    # take dummy item template
+    item = channel[10]
+    # remove dummy
+    channel.remove(item)
+
     # open CSV file
     reload(sys)
     sys.setdefaultencoding('utf8')
@@ -366,63 +428,78 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
     # decide what to spin, add to "to_spin"
     with open(filepath) as csvfile:
         reader = csv.DictReader(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
+        for row in reader:
+            # print row
 
-    # parse template
-    tree = etree.parse(unit)  # element tree object
-    root = tree.getroot()
-    channel = root[0]
+            # item manipulation
+            # copy new instance of item
+            item_new = copy.deepcopy(item)
+            # title
+            item_new[0].text =  unicode(row['Item_name'], errors="replace")
+            # link
+            item_new[1].text = item_new[1].text.replace("facebook-copy", slugify.slugify(item_new[0].text.lower()))
+            # pubdate
+            # item_new[2].text =
+            # guid
+            item_new[4].text = item_new[4].text.replace("343453", str(start_id))  # append startid to link
+            # desc
+            item_new[5].text = unicode(row['Description'], errors="replace")
+            # downloadbox
+            item_new[6].text = item_new[6].text.replace("com.facebook.katana", row['package_name'])
+            # post id
+            item_new[8].text = str(start_id)
+            # post name
+            item_new[13].text = slugify.slugify(item_new[0].text.lower())
+            print item_new[13].text
 
-    # take dummy item template
-    item = channel[10]
-    # remove dummy
-    channel.remove(item)
+            #split author link:
+            try:
+                row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[1].split("mailto:")
+            except:
+                row["Author_site"] = row["Author_link"]
+                pass
 
-    for row in reader:
-        # print row
+            #split developer id
 
-        # item manipulation
-        # copy new instance of item
-        item_new = copy.deepcopy(item)
-        # title
-        item_new[0].text = row['Item_name']
-        # link
-        item_new[1].text = item_new[1].text.replace("facebook-copy", row['Item_name'].lower().replace(" ", "-"))
-        # pubdate
-        # item_new[2].text =
-        # guid
-        item_new[4].text = item_new[4].text.replace("343453", str(start_id))  # append startid to link
-        # desc
-        item_new[5].text = row['Description']
-        # downloadbox
-        item_new[6].text = item_new[6].text.replace("com.facebook.katana", row['package_name'])
-        # post id
-        item_new[8].text = str(start_id)
-        # post name
-        item_new[13].text = row['Item_name'].lower().replace(" ", "-")
+            # copy category
+            cat = copy.deepcopy(item_new[36])
+            tag = copy.deepcopy(item_new[21])
+            print tag.text
 
-        # TODO: fetch category
+            type = copy.deepcopy(item_new[31])
+            visi = copy.deepcopy(item_new[28])
+            al = copy.deepcopy(item_new[20])
+
+            # remove old category
+            for i in range(20,36):
+                item_new.remove(item_new[i])
+            # add new category
+
+            # add new tags
 
 
 
 
-        # append to channel
-        channel.append(item_new)
+            # append to channel
+            channel.append(item_new)
 
-        # increase start_id
-        start_id += 1
-        # for i in range(0, len(item_new)):
-        #     print item_new[i].tag, item_new[i].text
-        # print item_new
+            # increase start_id
+            start_id += 1
+            # for i in range(0, len(item_new)):
+            #     print item_new[i].tag, item_new[i].text
+            # print item_new
 
-        # write to xmlfile
-        # tree_out = etree.ElementTree(root)
-        # tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
+            # write to xmlfile
+            # tree_out = etree.ElementTree(root)
+            # tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
 
 
 if __name__ == "__main__":
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    # xml_writer_test(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
-    csv_reader_test("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    # csv_reader_test("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/")
     #
