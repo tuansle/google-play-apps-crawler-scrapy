@@ -6,11 +6,12 @@ import urlparse
 from scrapy.crawler import CrawlerProcess
 import datetime
 import csv
+from misc import write_csv, open_csv, encode_str, standardize_string, decode_str
 
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
-    custom_settings = {"DEPTH_LIMIT" : 6, # for 1GB computer
+    custom_settings = {"DEPTH_LIMIT" : 10, # for 1GB computer
                        "RETRY_TIMES": 2}
 
     allowed_domains = ["play.google.com"]
@@ -49,35 +50,27 @@ class MySpider(CrawlSpider):
         for titles in titles:
             item = GplaycrawlerItem()
             item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract()).encode("utf-8")
-            item["Item_name"] = ''.join(titles.xpath('//*[@class="document-title"]/div/text()').extract()).encode(
-                "utf-8").replace("\n", ". ")
-            item["Updated"] = ''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Author"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Filesize"] = ''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Downloads"] = ''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Version"] = ''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Compatibility"] = ''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract()).encode(
-                "utf-8").replace("\n", ". ")
-            item["Content_rating"] = ''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract()).encode(
-                "utf-8").replace("\n", ". ")
-            item["Author_link"] = ''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()).encode(
-                "utf-8").replace("\n", ". ")  # TODO: separate links and emails
-            ##        item["Author_link_test"] = titles.xpath('//*[@class="content contains-text-link"]/a/@href').extract()
-            item["Genre"] = ''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Price"] = ''.join(titles.xpath(
-                '//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()).encode(
-                "utf-8").replace("\n", ". ")  # install mean free
-            item["Rating_value"] = ''.join(titles.xpath('//*[@class="score"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Review_number"] = ''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Description"] = ''.join(titles.xpath('//*[@jsname="C4s9Ed"]//text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["IAP"] = ''.join(titles.xpath('//*[@class="inapp-msg"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Developer_badge"] = ''.join(titles.xpath('//*[@class="badge-title"]//text()').extract()).encode(
-                "utf-8").replace("\n", ". ")
-            item["Physical_address"] = ''.join(titles.xpath('//*[@class="content physical-address"]/text()').extract()).encode("utf-8").replace("\n", ". ")
-            item["Video_URL"] = ''.join(titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract()).encode("utf-8").replace("\n", ". ")
-            item["Developer_ID"] = ''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract()).encode("utf-8").replace("\n", ". ")
-            item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract()).encode("utf-8").replace("\n", ". ")
-            item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract()).encode("utf-8").replace("\n", ". ")
+            item["Item_name"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="document-title"]/div/text()').extract())))
+            item["Updated"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract())))
+            item["Author"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract())))
+            item["Filesize"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract())))
+            item["Downloads"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract())))
+            item["Version"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract())))
+            item["Compatibility"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract())))
+            item["Content_rating"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract())))
+            item["Author_link"] = encode_str(''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()))  # TODO: separate links and emails
+            item["Genre"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract())))
+            item["Price"] = encode_str(''.join(titles.xpath('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()))  # install mean free
+            item["Rating_value"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="score"]/text()').extract())))
+            item["Review_number"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract())))
+            item["Description"] = encode_str(standardize_string(''.join(titles.xpath('//*[@jsname="C4s9Ed"]//text()').extract())))
+            item["IAP"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="inapp-msg"]/text()').extract())))
+            item["Developer_badge"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="badge-title"]//text()').extract())))
+            item["Physical_address"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="content physical-address"]/text()').extract())))
+            item["Video_URL"] = ''.join(titles.xpath('//*[@class="play-action-container"]/@data-video-url').extract())
+            item["Developer_ID"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="author"]/a/@href').extract())))
+            item["cover_image"] = ''.join(titles.xpath('//*[@class="cover-container"]/img/@src').extract())
+            item["screenshots"] = ''.join(titles.xpath('//*[@class="full-screenshot"]/@src').extract())
             if item["Link"][0:46] == "https://play.google.com/store/apps/details?id=":
                 # split package name out of link
                 try:
@@ -95,42 +88,12 @@ class MySpider(CrawlSpider):
                 # print item
                 self.items.append(item)
 
-        if len(self.items) == 4000:    #for 1GB computer
+        if len(self.items) == 10:    #for 1GB computer
             filename = str(self.filename) + ".csv"
             self.filename += 1
 
-            # field definition
-            fieldnames = ['Video_URL',
-                          'Author',
-                          'Content_rating',
-                          'Version',
-                          'Filesize',
-                          'screenshots',
-                          'Updated',
-                          'Description',
-                          'Review_number',
-                          'Downloads',
-                          'Link',
-                          'Genre',
-                          'Developer_badge',
-                          'Item_name',
-                          'Rating_value',
-                          'package_name',
-                          'IAP',
-                          'Physical_address',
-                          'Author_link',
-                          'Compatibility',
-                          'Developer_ID',
-                          'cover_image',
-                          'Price']
-
-            with open(filename, 'a') as csvfile:
-
-                spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
-                spamwriter.writeheader()
-                spamwriter.writerows(self.items)
-                csvfile.close()
-                spamwriter = None
+            # write to file
+            write_csv(csv_path=filename, list_to_write=self.items)
             self.items = []
 
 
