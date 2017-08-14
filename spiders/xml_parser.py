@@ -9,7 +9,7 @@ from langdetect import detect
 import slugify
 from misc import open_csv, randomDate, decode_str, decode_url
 from datetime import datetime, timedelta
-
+import random
 
 def parseXML(xmlFile):
     """
@@ -51,6 +51,11 @@ def parseXML_test(xmlFile):
 
     s = etree.tostring(channel, pretty_print=True)
     # print s
+
+    # test cmt
+    print "comments"
+    for i in range(0, len(item2[89])):
+        print item2[89][i].tag, item2[89][i].text, i
     return tree
 
 
@@ -73,7 +78,7 @@ def csv_reader_test_genre(filepath):
         if fil.endswith("csv"):
             reader = open_csv(os.path.join(filepath, fil))
             for row in reader:
-                genre.append(row["Developer_badge"].replace("&", "and"))
+                genre.append(row["Content_rating"].replace("&", "and"))
 
     print set(genre)
 
@@ -349,40 +354,103 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # app icon
         item_new[43][1].text = item_new[43][1].text.replace("appicontest", decode_url(row["cover_image"]))
 
-        # TODO: comment
+        for i in range(1,5):
+            if row["review_star" + str(i)] and len(row["review_star" + str(i)]) > 10:
+                comment = copy.deepcopy(item_new[89])
+                #remove old comment
+                item_new.remove(item_new[89])
+                # add infor for comment
+                #comment id
+                comment[0].text = str(start_cmt_id)
+
+                #comment author
+                comment[1].text = row["review_username" + str(i)]
+
+                #comment date: in range (last 3 days)
+                comment[5].text = comment[5].text.replace("2017-05-25 18:08:01", randomDate(time_pub.strftime('%Y-%m-%d %H:%M:%S'), ctime.strftime('%Y-%m-%d %H:%M:%S'), random.random()))
+                #comment date_gmt
+                comment[6].text =  comment[5].text
+
+                #comment content
+                comment[7].text = row["review_content" + str(i)]
+
+                #comment userid = comment id
+                comment[11].text = comment[0].text
+                #comment rating
+                comment[12][1].text = filter(str.isdigit, row["review_star" + str(i)])
+
+                # + 1 to comment id
+                start_cmt_id += 1
+                # append item
+                item_new.append(comment)
+
         # TODO: category
+        #copy category
+        cat = copy.deepcopy(item_new[88])
+        cat_genre = copy.deepcopy(item_new[88])
+        cat_genre.text = cat_genre.text.replace("Games", row["Genre"])
+        cat_genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
+        item_new.append(cat_genre)
+
+
+        #copy tag
+        #content rating tag
+        rating = copy.deepcopy(item_new[81])
+        rating.text = rating.text.replace("Apps", row["Content_rating"])
+        rating.attrib['nicename'] = slugify.slugify(unicode(row["Content_rating"]))
+        item_new.append(rating)
+
+        #genre tag
+        genre = copy.deepcopy(item_new[81])
+        genre.text = genre.text.replace("Apps", row["Genre"])
+        genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
+        item_new.append(genre)
+
+        #name tag
+        name = copy.deepcopy(item_new[81])
+        name.text = name.text.replace("Apps", row["Item_name"])
+        name.attrib['nicename'] = slugify.slugify(unicode(row["Item_name"]))
+        item_new.append(name)
+
+        #download tag
+        download = copy.deepcopy(item_new[81])
+        download.text = download.text.replace("Apps", row["Downloads"])
+        download.attrib['nicename'] = slugify.slugify(unicode(row["Downloads"]))
+        item_new.append(download)
+
+        #author tag
+        author = copy.deepcopy(item_new[81])
+        author.text = author.text.replace("Apps", row["Author"])
+        author.attrib['nicename'] = slugify.slugify(unicode(row["Author"]))
+        item_new.append(author)
+
+        #price tag
+        price = copy.deepcopy(item_new[81])
+        if "Buy" in row["Price"]:
+            price.text = price.text.replace("Apps", "Paid App")
+            price.attrib['nicename'] = "paid-app"
+        else:
+            price.text = price.text.replace("Apps", "Free App")
+            price.attrib['nicename'] = "free-app"
+        item_new.append(price)
+
+        #remove old category
+        for i in range(81, 89):
+            item_new.remove(item_new[81])
 
 
         # #debug
         # for i in range(0,21):
         #     print item_new[i].tag, item_new[i].text
         # split author link:
-        try:
-            row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[
-                1].split("mailto:")
-        except:
-            row["Author_site"] = row["Author_link"]
-            pass
+        # try:
+        #     row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[
+        #         1].split("mailto:")
+        # except:
+        #     row["Author_site"] = row["Author_link"]
+        #     pass
 
         # split developer id
-
-        # copy category
-        cat = copy.deepcopy(item_new[36])
-        tag = copy.deepcopy(item_new[21])
-        print tag.text
-
-        type = copy.deepcopy(item_new[31])
-        visi = copy.deepcopy(item_new[28])
-        al = copy.deepcopy(item_new[20])
-
-        # remove old category
-        for i in range(20, 36):
-            item_new.remove(item_new[i])
-        # add new category
-
-        # add new tags
-
-
 
 
         # append to channel
@@ -390,9 +458,9 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # increase start_id
         start_id += 1
-        # for i in range(0, len(item_new)):
-        #     print item_new[i].tag, item_new[i].text
-        # print item_new
+        for i in range(0, len(item_new)):
+            print item_new[i].tag, item_new[i].text
+        print item_new
 
         # decode
         # write to xmlfile
