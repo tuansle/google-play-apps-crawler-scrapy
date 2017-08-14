@@ -112,7 +112,19 @@ def open_csv(csv_path):
                   'Compatibility',
                   'Developer_ID',
                   'cover_image',
-                  'Price']
+                  'Price',
+                  'review_username1',
+                  'review_username2',
+                  'review_username3',
+                  'review_username4',
+                  'review_star1',
+                  'review_star2',
+                  'review_star3',
+                  'review_star4',
+                  'review_content1',
+                  'review_content2',
+                  'review_content3',
+                  'review_content4']
 
     result_list = []
 
@@ -161,7 +173,19 @@ def write_csv(csv_path, list_to_write):
                   'Compatibility',
                   'Developer_ID',
                   'cover_image',
-                  'Price']
+                  'Price',
+                  'review_username1',
+                  'review_username2',
+                  'review_username3',
+                  'review_username4',
+                  'review_star1',
+                  'review_star2',
+                  'review_star3',
+                  'review_star4',
+                  'review_content1',
+                  'review_content2',
+                  'review_content3',
+                  'review_content4']
 
     with open(csv_path, 'w') as csvfile:
         spamwriter = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=' ', quotechar='|', )
