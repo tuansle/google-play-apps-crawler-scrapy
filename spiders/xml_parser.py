@@ -321,9 +321,9 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # guid
         item_new[4].text = item_new[4].text.replace("343453", str(start_id))  # append startid to link
         # desc
-        item_new[5].text = unicode(decode_str(row['Description']), errors="replace")
+        # item_new[5].text = decode_str(row['Description'])
         # downloadbox
-        item_new[6].text = item_new[6].text.replace("com.facebook.katana", row['package_name'])
+        item_new[6].text = decode_str(row['Description']) + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
 
@@ -384,7 +384,6 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                 # append item
                 item_new.append(comment)
 
-        # TODO: category
         #copy category
         cat = copy.deepcopy(item_new[88])
         cat_genre = copy.deepcopy(item_new[88])
@@ -458,18 +457,22 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # increase start_id
         start_id += 1
-        for i in range(0, len(item_new)):
-            print item_new[i].tag, item_new[i].text
-        print item_new
+        # for i in range(0, len(item_new)):
+        #     print item_new[i].tag, item_new[i].text
+        # print item_new
 
         # decode
-        # write to xmlfile
-        # tree_out = etree.ElementTree(root)
-        # tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
+
+    # remove first error item
+    channel.remove(channel[10])
+    # write to xmlfile
+
+    tree_out = etree.ElementTree(root)
+    tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
 
 
 if __name__ == "__main__":
-    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile//old/1.csv")
+    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=1000, start_cmt_id=1000)
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
