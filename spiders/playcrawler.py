@@ -88,7 +88,7 @@ class MySpider(CrawlSpider):
                 # print item
                 self.items.append(item)
 
-        if len(self.items) == 10:    #for 1GB computer
+        if len(self.items) == 5000:    # 5000 for 1GB computer
             filename = str(self.filename) + ".csv"
             self.filename += 1
 
