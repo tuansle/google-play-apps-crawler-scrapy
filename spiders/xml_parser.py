@@ -7,7 +7,8 @@ from wordai.turing import TuringWordAi as wa
 from spinrewriter import SpinRewriter
 from langdetect import detect
 import slugify
-from misc import open_csv
+from misc import open_csv, randomDate, decode_str, decode_url
+from datetime import datetime, timedelta
 
 
 def parseXML(xmlFile):
@@ -45,8 +46,8 @@ def parseXML_test(xmlFile):
     for i in range(0, len(item2)):
         print item2[i].tag, item2[i].text, i
 
-    print "fasdfads"
-    print item2[37][1].tag, item2[37][1].text
+    print "seo key"
+    print item2[21][1].tag, item2[21][1].text
 
     s = etree.tostring(channel, pretty_print=True)
     # print s
@@ -274,7 +275,7 @@ def spinrewriter_spinner(filepath, download_min=99999000):
                 spamwriter = None
 
 
-def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
+def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0):
     '''
     Function to read csv file and convert to wp-importable xml file
     Returns
@@ -295,6 +296,9 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
     # open CSV file
     reader = open_csv(filepath)
 
+    #take current time
+    ctime = datetime.now()
+
     for row in reader:
         # print row
 
@@ -302,23 +306,56 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
         # copy new instance of item
         item_new = copy.deepcopy(item)
         # title
-        item_new[0].text = unicode(row['Item_name'], errors="replace")
+        item_new[0].text = unicode(row['Item_name'].title(), errors="replace")  # e.g faceBook Messenger => Facebook Messenger
         # link
-        item_new[1].text = item_new[1].text.replace("facebook-copy", slugify.slugify(item_new[0].text.lower()))
+        item_new[1].text = item_new[1].text.replace("facebook-copy", slugify.slugify(unicode(item_new[0].text.lower())))
         # pubdate
-        # item_new[2].text =
+        # pubdate = currentdate - 3
+        time_pub = ctime - timedelta(days=3)
+        item_new[2].text = item_new[2].text.replace("08 Aug 2017 16:48:47", time_pub.strftime('%Y %b %d %H:%M:%S'))
         # guid
         item_new[4].text = item_new[4].text.replace("343453", str(start_id))  # append startid to link
         # desc
-        item_new[5].text = unicode(row['Description'], errors="replace")
+        item_new[5].text = unicode(decode_str(row['Description']), errors="replace")
         # downloadbox
         item_new[6].text = item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
-        # post name
-        item_new[13].text = slugify.slugify(item_new[0].text.lower())
-        print item_new[13].text
 
+        #post date and postdate gmt = time pub
+        #post date
+        item_new[9].text = item_new[9].text.replace("2017-08-08 16:48:47", time_pub.strftime('%Y-%m-%d %H:%M:%S'))
+        #post date gmt
+        item_new[10].text = item_new[9].text
+
+        # post name: slug
+        item_new[13].text = slugify.slugify(unicode(item_new[0].text.lower()))
+
+        # yoast wp seo keywords
+        item_new[21][1].text = item_new[21][1].text.replace("download", item_new[0].text + " APK Download")
+
+        # custom screenshots
+        item_new[30][1].text = item_new[30][1].text.replace("screenshots", decode_url(row["screenshots"]))
+
+        # date release
+        item_new[31][1].text = item_new[31][1].text.replace("2014-09-02", row['Updated'])
+
+        # author name
+        item_new[32][1].text = item_new[32][1].text.replace("Facebook", decode_str(row["Author"]))
+
+        #version
+        item_new[41][1].text = item_new[41][1].text.replace("3.1.1", row["Version"])
+
+        # app icon
+        item_new[43][1].text = item_new[43][1].text.replace("appicontest", decode_url(row["cover_image"]))
+
+        # TODO: comment
+        # TODO: category
+
+
+        # #debug
+        # for i in range(0,21):
+        #     print item_new[i].tag, item_new[i].text
         # split author link:
         try:
             row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[
@@ -364,10 +401,9 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0):
 
 
 if __name__ == "__main__":
-    # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
-    # xml_writer_test(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
+    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile//old/1.csv")
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
-    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
+    # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
     #
