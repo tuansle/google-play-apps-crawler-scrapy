@@ -79,13 +79,7 @@ class MySpider(CrawlSpider):
                     print e
                     pass
 
-                # # split website and email address out of author link:
-                # try:
-                #     item["Author_site"], item["Author_email"] = \
-                #         item["Author_link"].split("https://www.google.com/url?q=")[1].split("mailto:")
-                # except:
-                #     pass
-                # print item
+                #print item #debug
                 self.items.append(item)
 
         if len(self.items) == 5000:    # 5000 for 1GB computer
