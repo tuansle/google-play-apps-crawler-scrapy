@@ -54,7 +54,10 @@ def decode_str(in_str):
     -------
 
     '''
-    return in_str.replace(".xd.", "\n")
+    try:
+        return in_str.replace(".xd.", "\n")
+    except:
+        pass
 
 def decode_url(in_str):
     '''
