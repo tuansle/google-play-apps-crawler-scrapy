@@ -52,13 +52,13 @@ class MySpider(CrawlSpider):
             item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract()).encode("utf-8")
             item["Item_name"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="document-title"]/div/text()').extract())))
             item["Updated"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="datePublished"]/text()').extract())))
-            item["Author"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="author"]/a/span/text()').extract())))
+            item["Author"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="author"]/a[1]/span/text()').extract())))
             item["Filesize"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="fileSize"]/text()').extract())))
             item["Downloads"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="numDownloads"]/text()').extract())))
             item["Version"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="softwareVersion"]/text()').extract())))
             item["Compatibility"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract())))
             item["Content_rating"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract())))
-            item["Author_link"] = encode_str(''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()))  # TODO: separate links and emails
+            item["Author_link"] = encode_str(''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()))
             item["Genre"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract())))
             item["Price"] = encode_str(''.join(titles.xpath('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()))  # install mean free
             item["Rating_value"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="score"]/text()').extract())))
