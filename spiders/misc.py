@@ -39,7 +39,7 @@ def encode_str(in_str):
 
     '''
     try:
-        return in_str.encode("utf-8").replace("\n", "\|/")
+        return in_str.encode("utf-8").replace("\n", ".xd.")
     except:
         pass
 
@@ -54,7 +54,7 @@ def decode_str(in_str):
     -------
 
     '''
-    return in_str.replace("\|/", "\n")
+    return in_str.replace(".xd.", "\n")
 
 def decode_url(in_str):
     '''
