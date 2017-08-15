@@ -11,7 +11,7 @@ from misc import write_csv, open_csv, encode_str, standardize_string, decode_str
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
-    custom_settings = {"DEPTH_LIMIT" : 10, # for 1GB computer
+    custom_settings = {"DEPTH_LIMIT" : 15, # for 1GB computer
                        "RETRY_TIMES": 2}
 
     allowed_domains = ["play.google.com"]
@@ -47,6 +47,9 @@ class MySpider(CrawlSpider):
     def parse_link(self, response):
         hxs = HtmlXPathSelector(response)
         titles = hxs.xpath('/html')
+
+        # download list (banned list of least download times)
+        banned_download = ["None", None, " 15 ", " 510 ", " 1050 ", " 50100 ", " 100500 ", " 5001.000 ", " 1.0005.000 ", " 5.00010.000 ", " 10.00050.000 ", " 50.000100.000 "]
         for titles in titles:
             item = GplaycrawlerItem()
             item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract()).encode("utf-8")
@@ -92,10 +95,12 @@ class MySpider(CrawlSpider):
                     print e
                     pass
 
-                # print item #debug
-                self.items.append(item)
+                # only take apps has download more than xx
+                if item["Downloads"] not in banned_download:
+                #     print #debug
+                    self.items.append(item)
 
-        if len(self.items) == 5000:    # 5000 for 1GB computer
+        if len(self.items) == 2000:    # 5000 for 1GB computer
             filename = str(self.filename) + ".csv"
             self.filename += 1
 
