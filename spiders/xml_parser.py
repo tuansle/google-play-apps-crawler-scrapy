@@ -379,10 +379,11 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                 #comment rating
                 comment[12][1].text = filter(str.isdigit, row["review_star" + str(i)])
 
-                # + 1 to comment id
-                start_cmt_id += 1
                 # append item
                 item_new.append(comment)
+
+                # + 1 to comment id
+                start_cmt_id += 1
 
         #copy category
         cat = copy.deepcopy(item_new[88])
@@ -472,9 +473,10 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
 
 if __name__ == "__main__":
-    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=1000, start_cmt_id=1000)
+    # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
+    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest")
     #
