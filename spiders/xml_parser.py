@@ -78,7 +78,7 @@ def csv_reader_test_genre(filepath):
         if fil.endswith("csv"):
             reader = open_csv(os.path.join(filepath, fil))
             for row in reader:
-                genre.append(row["Content_rating"].replace("&", "and"))
+                genre.append(row["Developer_ID"].replace("&", "and"))
 
     print set(genre)
 
@@ -308,6 +308,16 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # print row
 
         # item manipulation
+
+        # split author link:
+        try:
+            row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[
+                1].split("mailto:")
+        except:
+            row["Author_site"] = row["Author_link"]
+            row["Author_email"] = "Hidden by Request"
+            pass
+
         # copy new instance of item
         item_new = copy.deepcopy(item)
         # title
@@ -323,7 +333,14 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # desc
         # item_new[5].text = decode_str(row['Description'])
         # downloadbox
-        item_new[6].text = decode_str(row['Description']) + item_new[6].text.replace("com.facebook.katana", row['package_name'])
+        item_new[6].text = "AUTHOR: " + decode_str(row["Author"]) + "\n" \
+                           + "AUTHOR WEBSITE: " + row["Author_site"] + "\n" \
+                           + "AUTHOR EMAIL: " + row["Author_email"] + "\n" \
+                           + "ANDROID VERSION COMPATIBILITY:" + row["Compatibility"] + "\n" \
+                           + "APP DESCRIPTION:\n" \
+                           + decode_str(row['Description']) + "\n" \
+                           + "Source: " + row['Link'] + "\n" \
+                           + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
 
@@ -358,7 +375,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
             if row["review_star" + str(i)] and len(row["review_star" + str(i)]) > 10:
                 comment = copy.deepcopy(item_new[89])
                 #remove old comment
-                item_new.remove(item_new[89])
+                # item_new.remove(item_new[89]) #temporary not remove predefined comment
                 # add infor for comment
                 #comment id
                 comment[0].text = str(start_cmt_id)
@@ -442,27 +459,12 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # #debug
         # for i in range(0,21):
         #     print item_new[i].tag, item_new[i].text
-        # split author link:
-        # try:
-        #     row["Author_site"], row["Author_email"] = row["Author_link"].split("https://www.google.com/url?q=")[
-        #         1].split("mailto:")
-        # except:
-        #     row["Author_site"] = row["Author_link"]
-        #     pass
-
-        # split developer id
-
 
         # append to channel
         channel.append(item_new)
 
         # increase start_id
         start_id += 1
-        # for i in range(0, len(item_new)):
-        #     print item_new[i].tag, item_new[i].text
-        # print item_new
-
-        # decode
 
     # remove first error item
     channel.remove(channel[10])
@@ -473,10 +475,10 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
 
 if __name__ == "__main__":
-    # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
+    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
-    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest")
+    # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest")
     #
