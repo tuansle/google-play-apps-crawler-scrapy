@@ -470,10 +470,11 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         item_new.append(price)
 
         #badge tag
-        badge = copy.deepcopy(item_new[82])
-        badge.text = badge.text.replace("Apps", row["Developer_badge"])
-        badge.attrib['nicename'] = slugify.slugify(unicode(row["Developer_badge"]))
-        item_new.append(badge)
+        if row["Developer_badge"]:
+            badge = copy.deepcopy(item_new[82])
+            badge.text = badge.text.replace("Apps", row["Developer_badge"])
+            badge.attrib['nicename'] = slugify.slugify(unicode(row["Developer_badge"]))
+            item_new.append(badge)
 
         #remove old category
         for i in range(82, 90): # from 82 to 89
