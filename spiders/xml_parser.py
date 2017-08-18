@@ -478,10 +478,19 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
     tree_out = etree.ElementTree(root)
     tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
 
+#generate xml for the whole folder
+def gen_xml_folder(folder_path, start_id):
+    for fil in os.listdir(folder_path):
+        xml_writer(filepath=os.path.join(folder_path, fil),unit="../static/unit.xml", start_id=start_id, start_cmt_id=start_id)
+        start_id += 2000
+
 
 if __name__ == "__main__":
+    #generate xml for the whole folder
+    gen_xml_folder("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles", start_id=1000)
+
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
-    parseXML_test("../static/unit.xml")
+    # parseXML_test("../static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
