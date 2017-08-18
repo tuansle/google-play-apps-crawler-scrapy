@@ -315,7 +315,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                 1].split("mailto:")
         except:
             row["Author_site"] = row["Author_link"]
-            row["Author_email"] = "Hidden by Request"
+            row["Author_email"] = ''
             pass
 
         # copy new instance of item
@@ -333,11 +333,10 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # desc
         # item_new[5].text = decode_str(row['Description'])
         # downloadbox
-        item_new[6].text = "AUTHOR: " + decode_str(row["Author"]) + "\n" \
-                           + "AUTHOR WEBSITE: " + row["Author_site"] + "\n" \
-                           + "AUTHOR EMAIL: " + row["Author_email"] + "\n" \
-                           + "ANDROID VERSION COMPATIBILITY:" + row["Compatibility"] + "\n" \
-                           + "APP DESCRIPTION:\n" \
+        item_new[6].text = "<b>Author</b>: " + decode_str(row["Author"]) + "\n" \
+                           + "<b>Author contact</b>: " + "\n" + row["Author_site"] + "\n" + row["Author_email"] + "\n" \
+                           + "<b>Android version compatibility</b>:" + row["Compatibility"] + "\n" \
+                           + "<b>App Description</b>:\n" \
                            + decode_str(row['Description']) + "\n" \
                            + "Source: " + row['Link'] + "\n" \
                            + item_new[6].text.replace("com.facebook.katana", row['package_name'])
@@ -487,7 +486,7 @@ def gen_xml_folder(folder_path, start_id):
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    gen_xml_folder("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles", start_id=1000)
+    gen_xml_folder("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles_new", start_id=1000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("../static/unit.xml")
