@@ -371,11 +371,15 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # app icon
         item_new[43][1].text = item_new[43][1].text.replace("appicontest", decode_url(row["cover_image"]))
 
+        # yoast wp seo snipet
+        item_new[78][1].text = item_new[78][1].text.replace("testdescription", "1-Click Download " + item_new[0].text + " APK for Android devices. " + item_new[0].text + " Android App for Samsung, Huawei, OPPO, Sony, Google smartphones and tablets.")
+
+        # COMMENTS
         for i in range(1,5):
             if row["review_star" + str(i)] and len(row["review_star" + str(i)]) > 10:
-                comment = copy.deepcopy(item_new[89])
+                comment = copy.deepcopy(item_new[90])
                 #remove old comment
-                # item_new.remove(item_new[89]) #temporary not remove predefined comment
+                # item_new.remove(item_new[90]) #temporary not remove predefined comment
                 # add infor for comment
                 #comment id
                 comment[0].text = str(start_cmt_id)
@@ -402,9 +406,10 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                 # + 1 to comment id
                 start_cmt_id += 1
 
+        # CATEGORY
         #copy category
-        cat = copy.deepcopy(item_new[88])
-        cat_genre = copy.deepcopy(item_new[88])
+        cat = copy.deepcopy(item_new[89])
+        cat_genre = copy.deepcopy(item_new[89])
         cat_genre.text = cat_genre.text.replace("Games", row["Genre"])
         cat_genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(cat_genre)
@@ -412,37 +417,37 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         #copy tag
         #content rating tag
-        rating = copy.deepcopy(item_new[81])
+        rating = copy.deepcopy(item_new[82])
         rating.text = rating.text.replace("Apps", row["Content_rating"])
         rating.attrib['nicename'] = slugify.slugify(unicode(row["Content_rating"]))
         item_new.append(rating)
 
         #genre tag
-        genre = copy.deepcopy(item_new[81])
+        genre = copy.deepcopy(item_new[82])
         genre.text = genre.text.replace("Apps", row["Genre"])
         genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(genre)
 
         #name tag
-        name = copy.deepcopy(item_new[81])
+        name = copy.deepcopy(item_new[82])
         name.text = name.text.replace("Apps", row["Item_name"])
         name.attrib['nicename'] = slugify.slugify(unicode(row["Item_name"]))
         item_new.append(name)
 
         #download tag
-        download = copy.deepcopy(item_new[81])
+        download = copy.deepcopy(item_new[82])
         download.text = download.text.replace("Apps", row["Downloads"])
         download.attrib['nicename'] = slugify.slugify(unicode(row["Downloads"]))
         item_new.append(download)
 
         #author tag
-        author = copy.deepcopy(item_new[81])
+        author = copy.deepcopy(item_new[82])
         author.text = author.text.replace("Apps", row["Author"])
         author.attrib['nicename'] = slugify.slugify(unicode(row["Author"]))
         item_new.append(author)
 
         #price tag
-        price = copy.deepcopy(item_new[81])
+        price = copy.deepcopy(item_new[82])
         if "Buy" in row["Price"]:
             price.text = price.text.replace("Apps", "Paid App")
             price.attrib['nicename'] = "paid-app"
@@ -452,8 +457,8 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         item_new.append(price)
 
         #remove old category
-        for i in range(81, 89):
-            item_new.remove(item_new[81])
+        for i in range(82, 90): # from 82 to 89
+            item_new.remove(item_new[82]) # always remove item at index #82
 
 
         # #debug
@@ -475,8 +480,8 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
 
 if __name__ == "__main__":
-    xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
-    # parseXML_test("static/unit.xml")
+    # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
+    parseXML_test("../static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
