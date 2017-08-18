@@ -11,8 +11,8 @@ from misc import write_csv, open_csv, encode_str, standardize_string, decode_str
 
 class MySpider(CrawlSpider):
     name = "playcrawler"
-    custom_settings = {"DEPTH_LIMIT" : 15, # for 1GB computer
-                       "RETRY_TIMES": 2}
+    custom_settings = {"DEPTH_LIMIT" : 17, # for 1GB computer
+                       "RETRY_TIMES": 1}
 
     allowed_domains = ["play.google.com"]
     start_urls = ["https://play.google.com/store/apps?hl=en"]
@@ -49,7 +49,11 @@ class MySpider(CrawlSpider):
         titles = hxs.xpath('/html')
 
         # download list (banned list of least download times)
-        banned_download = ["None", None, " 15 ", " 510 ", " 1050 ", " 50100 ", " 100500 ", " 5001.000 ", " 1.0005.000 ", " 5.00010.000 ", " 10.00050.000 ", " 50.000100.000 "]
+        #for lenovo laptop
+        # banned_download = ["None", None, " 15 ", " 510 ", " 1050 ", " 50100 ", " 100500 ", " 5001.000 ", " 1.0005.000 ", " 5.00010.000 ", " 10.00050.000 ", " 50.000100.000 "]
+        #for linode server  1,000 - 5,000
+        banned_download = ["None", None, "  1 - 5  ", "  5 - 10  ", "  10 - 50  ", "  50 - 100  ", "  100 - 500  ", "  500 - 1,000  ", "  1,000 - 5,000  ", "  5,000 - 10,000  ", "  10,000 - 50,000  ", "  50,000 - 100,000  "]
+
         for titles in titles:
             item = GplaycrawlerItem()
             item["Link"] = ''.join(titles.xpath('head/link[6]/@href').extract()).encode("utf-8")
