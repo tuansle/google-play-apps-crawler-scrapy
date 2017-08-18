@@ -66,7 +66,8 @@ class MySpider(CrawlSpider):
             item["Compatibility"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="operatingSystems"]/text()').extract())))
             item["Content_rating"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="contentRating"]/text()').extract())))
             item["Author_link"] = encode_str(''.join(titles.xpath('//*[@class="dev-link"]/@href').extract()))
-            item["Genre"] = encode_str(standardize_string(''.join(titles.xpath('//*[@itemprop="genre"]/text()').extract())))
+            item["Genre"] = encode_str(standardize_string(''.join(titles.xpath('//*[@id="body-content"]/div/div/div[1]/div[1]/div/div[1]/div/div[2]/div[2]/div[2]/div/a[2]/span/text()').extract())))
+            item["Genre2"] = encode_str(standardize_string(''.join(titles.xpath('//*[@id="body-content"]/div/div/div[1]/div[1]/div/div[1]/div/div[2]/div[2]/div[2]/div/a[3]/span/text()').extract())))
             item["Price"] = encode_str(''.join(titles.xpath('//*[@class="price buy id-track-click id-track-impression"]/span[2]/text()').extract()))  # install mean free
             item["Rating_value"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="score"]/text()').extract())))
             item["Review_number"] = encode_str(standardize_string(''.join(titles.xpath('//*[@class="reviews-num"]/text()').extract())))
@@ -101,7 +102,7 @@ class MySpider(CrawlSpider):
 
                 # only take apps has download more than xx
                 if item["Downloads"] not in banned_download:
-                #     print #debug
+                    # print item #debug
                     self.items.append(item)
 
         if len(self.items) == 2000:    # 5000 for 1GB computer

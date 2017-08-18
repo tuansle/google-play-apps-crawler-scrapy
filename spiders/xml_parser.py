@@ -338,7 +338,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                            + "<b>Android version compatibility</b>:" + row["Compatibility"] + "\n" \
                            + "<b>App Description</b>:\n" \
                            + decode_str(row['Description']) + "\n" \
-                           + "Source: " + row['Link'] + "\n" \
+                           + '<a href="' + row['Link'] + '">Source</a>'  + "\n" \
                            + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
@@ -407,11 +407,18 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # CATEGORY
         #copy category
-        cat = copy.deepcopy(item_new[89])
         cat_genre = copy.deepcopy(item_new[89])
         cat_genre.text = cat_genre.text.replace("Games", row["Genre"])
         cat_genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(cat_genre)
+
+        # if there is genre2
+        if row["Genre2"]:
+            cat_genre2 = copy.deepcopy(item_new[89])
+            cat_genre2.text = cat_genre2.text.replace("Games", row["Genre"])
+            cat_genre2.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
+            item_new.append(cat_genre2)
+
 
 
         #copy tag
@@ -426,6 +433,13 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         genre.text = genre.text.replace("Apps", row["Genre"])
         genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(genre)
+
+        # if there is genre2
+        if row["Genre2"]:
+            genre2 = copy.deepcopy(item_new[82])
+            genre2.text = genre2.text.replace("Apps", row["Genre"])
+            genre2.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
+            item_new.append(genre2)
 
         #name tag
         name = copy.deepcopy(item_new[82])

@@ -22,6 +22,7 @@ class GplaycrawlerItem(scrapy.Item):
     Author_link = scrapy.Field()
     ##    Author_link_test = scrapy.Field()
     Genre = scrapy.Field()
+    Genre2 = scrapy.Field()
     Price = scrapy.Field()
     Rating_value = scrapy.Field()
     Review_number = scrapy.Field()
