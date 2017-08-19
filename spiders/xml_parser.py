@@ -352,7 +352,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         #wp meta index start (the first {http://wordpress.org/export/1.2/}postmeta  in parsexmltest)
         wp_first_meta_index = 20
         #copy tag
-        index_cat_apps = 41 # the index of "category Apps 82" run parsexmltest
+        index_cat_apps = 42 # the index of "category Apps 82" run parsexmltest
 
         # yoast wp seo keywords
         item_new[wp_first_meta_index][1].text = item_new[wp_first_meta_index][1].text.replace("download", item_new[0].text + " APK Download")
@@ -381,17 +381,17 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # port-requirement (android requirement)
         if row["Compatibility"]:
-            item_new[wp_first_meta_index + 17][1].text = item_new[wp_first_meta_index + 17][1].text.replace("2.3 and up", row["Compatibility"])
+            item_new[wp_first_meta_index + 17][1].text = item_new[wp_first_meta_index + 17][1].text.replace("2.3 and up", row["Compatibility"].strip())
 
         # custom meta field: content rating
         if row["Content_rating"]:
-            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Everyone", row["Content_rating"])
+            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Everyone", row["Content_rating"].strip())
         # custom meta field:downloads
         if row["Downloads"]:
-            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("100,000 - 500,000", row["Downloads"])
-        # custom meta field: author info
-        if row["Author_site"]:
-            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Hidden on request", row["Author_site"] + "\n" + row["Author_email"])
+            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("100,000 - 500,000", row["Downloads"].strip())
+        # # custom meta field: author info
+        # if row["Author_site"]:
+        #     item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Hidden on request", row["Author_site"] + "\n" + row["Author_email"])
 
         # COMMENTS
         for i in range(1,5):
@@ -526,10 +526,10 @@ def gen_xml_folder(folder_path, unit="../static/unit.xml",  start_id=1000):
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    # gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=1000)
+    gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=3000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
-    parseXML_test("static/unit.xml")
+    # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")

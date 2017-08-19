@@ -136,7 +136,7 @@
 		</wp:postmeta>
 		<wp:postmeta>
 			<wp:meta_key><![CDATA[app-custom-meta]]></wp:meta_key>
-			<wp:meta_value><![CDATA[a:3:{i:1;a:3:{s:5:"title";s:14:"Content Rating";s:4:"icon";s:10:"fa-warning";s:5:"value";s:8:"Everyone";}i:2;a:3:{s:5:"title";s:9:"Downloads";s:4:"icon";s:11:"fa-download";s:5:"value";s:17:"100,000 - 500,000";}i:0;a:3:{s:5:"title";s:14:"Author Address";s:4:"icon";s:7:"fa-info";s:5:"value";s:17:"Hidden on request";}}]]></wp:meta_value>
+			<wp:meta_value><![CDATA[a:2:{i:1;a:3:{s:5:"title";s:14:"Content Rating";s:4:"icon";s:10:"fa-warning";s:5:"value";s:8:"Everyone";}i:2;a:3:{s:5:"title";s:9:"Downloads";s:4:"icon";s:11:"fa-download";s:5:"value";s:17:"100,000 - 500,000";}}]]></wp:meta_value>
 		</wp:postmeta>
 		<category domain="product_visibility" nicename="featured"><![CDATA[featured]]></category>
 		<category domain="product_type" nicename="simple"><![CDATA[simple]]></category>
