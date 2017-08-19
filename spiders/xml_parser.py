@@ -333,11 +333,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # desc
         # item_new[5].text = decode_str(row['Description'])
         # downloadbox
-        item_new[6].text = "<b>Author</b>: " + decode_str(row["Author"]) + "\n" \
-                           + "<b>Author contact</b>: " + "\n" + row["Author_site"] + "\n" + row["Author_email"] + "\n" \
-                           + "<b>Android version compatibility</b>:" + row["Compatibility"] + "\n" \
-                           + "<b>App Description</b>:\n" \
-                           + decode_str(row['Description']) + "\n" \
+        item_new[6].text = decode_str(row['Description']) + "\n" \
                            + '<a href="' + row['Link'] + ' target="_blank"' + '">Source</a>' + "\n" \
                            + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
@@ -352,8 +348,12 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # post name: slug
         item_new[13].text = slugify.slugify(unicode(item_new[0].text.lower()))
 
+        # IMPORTANT: index init
         #wp meta index start (the first {http://wordpress.org/export/1.2/}postmeta  in parsexmltest)
         wp_first_meta_index = 20
+        #copy tag
+        index_cat_apps = 41 # the index of "category Apps 82" run parsexmltest
+
         # yoast wp seo keywords
         item_new[wp_first_meta_index][1].text = item_new[wp_first_meta_index][1].text.replace("download", item_new[0].text + " APK Download")
 
@@ -376,13 +376,23 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         item_new[wp_first_meta_index + 15][1].text = item_new[wp_first_meta_index + 15][1].text.replace("testdescription", "1-Click Download " + item_new[0].text + " APK for Android devices. " + item_new[0].text + " Android App for Samsung, Huawei, OPPO, Sony, Google smartphones and tablets.")
 
         # port-version (app version)
+        if row["Version"]:
+            item_new[wp_first_meta_index + 16][1].text = item_new[wp_first_meta_index + 16][1].text.replace("1", row["Version"])
 
         # port-requirement (android requirement)
+        if row["Compatibility"]:
+            item_new[wp_first_meta_index + 17][1].text = item_new[wp_first_meta_index + 17][1].text.replace("2.3 and up", row["Compatibility"])
 
-        # custom meta field (currently for author address)
+        # custom meta field: content rating
+        if row["Content_rating"]:
+            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Everyone", row["Content_rating"])
+        # custom meta field:downloads
+        if row["Downloads"]:
+            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("100,000 - 500,000", row["Downloads"])
+        # custom meta field: author info
+        if row["Author_site"]:
+            item_new[wp_first_meta_index + 18][1].text = item_new[wp_first_meta_index + 18][1].text.replace("Hidden on request", row["Author_site"] + "\n" + row["Author_email"])
 
-        #copy tag
-        index_cat_apps = 41 # the index of "category Apps 82" run parsexmltest
         # COMMENTS
         for i in range(1,5):
             if row["review_star" + str(i)] and len(row["review_star" + str(i)]) > 10:
