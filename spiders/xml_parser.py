@@ -46,17 +46,17 @@ def parseXML_test(xmlFile):
     for i in range(0, len(item2)):
         print item2[i].tag, item2[i].text, i
 
-    print "seo key"
-    print item2[21][1].tag, item2[21][1].text
+    # print "seo key"
+    # print item2[21][1].tag, item2[21][1].text
 
     s = etree.tostring(channel, pretty_print=True)
     # print s
 
-    # test cmt
-    print "comments"
-    for i in range(0, len(item2[89])):
-        print item2[89][i].tag, item2[89][i].text, i
-    return tree
+    # # test cmt
+    # print "comments"
+    # for i in range(0, len(item2[89])):
+    #     print item2[89][i].tag, item2[89][i].text, i
+    # return tree
 
 
 def find_etree_tag(ee):
@@ -352,31 +352,41 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # post name: slug
         item_new[13].text = slugify.slugify(unicode(item_new[0].text.lower()))
 
+        #wp meta index start (the first {http://wordpress.org/export/1.2/}postmeta  in parsexmltest)
+        wp_first_meta_index = 20
         # yoast wp seo keywords
-        item_new[21][1].text = item_new[21][1].text.replace("download", item_new[0].text + " APK Download")
+        item_new[wp_first_meta_index][1].text = item_new[wp_first_meta_index][1].text.replace("download", item_new[0].text + " APK Download")
 
         # custom screenshots
-        item_new[30][1].text = item_new[30][1].text.replace("screenshots", decode_url(row["screenshots"]))
+        item_new[wp_first_meta_index + 3][1].text = item_new[wp_first_meta_index + 3][1].text.replace("screenshots", decode_url(row["screenshots"]))
 
         # date release
-        item_new[31][1].text = item_new[31][1].text.replace("2014-09-02", row['Updated'])
+        item_new[wp_first_meta_index + 4][1].text = item_new[wp_first_meta_index + 4][1].text.replace("2014-09-02", row['Updated'])
 
         # author name
-        item_new[32][1].text = item_new[32][1].text.replace("Facebook", decode_str(row["Author"]))
+        item_new[wp_first_meta_index + 5][1].text = item_new[wp_first_meta_index + 5][1].text.replace("Facebook", decode_str(row["Author"]))
 
         #version
-        item_new[41][1].text = item_new[41][1].text.replace("3.1.1", row["Version"])
+        item_new[wp_first_meta_index + 7][1].text = item_new[wp_first_meta_index + 7][1].text.replace("3.1.1", row["Version"])
 
         # app icon
-        item_new[43][1].text = item_new[43][1].text.replace("appicontest", decode_url(row["cover_image"]))
+        item_new[wp_first_meta_index + 8][1].text = item_new[wp_first_meta_index + 8][1].text.replace("appicontest", decode_url(row["cover_image"]))
 
-        # yoast wp seo snipet
-        item_new[78][1].text = item_new[78][1].text.replace("testdescription", "1-Click Download " + item_new[0].text + " APK for Android devices. " + item_new[0].text + " Android App for Samsung, Huawei, OPPO, Sony, Google smartphones and tablets.")
+        # yoast wp seo snipet #
+        item_new[wp_first_meta_index + 15][1].text = item_new[wp_first_meta_index + 15][1].text.replace("testdescription", "1-Click Download " + item_new[0].text + " APK for Android devices. " + item_new[0].text + " Android App for Samsung, Huawei, OPPO, Sony, Google smartphones and tablets.")
 
+        # port-version (app version)
+
+        # port-requirement (android requirement)
+
+        # custom meta field (currently for author address)
+
+        #copy tag
+        index_cat_apps = 41 # the index of "category Apps 82" run parsexmltest
         # COMMENTS
         for i in range(1,5):
             if row["review_star" + str(i)] and len(row["review_star" + str(i)]) > 10:
-                comment = copy.deepcopy(item_new[90])
+                comment = copy.deepcopy(item_new[index_cat_apps + 8])
                 #remove old comment
                 # item_new.remove(item_new[90]) #temporary not remove predefined comment
                 # add infor for comment
@@ -407,60 +417,59 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # CATEGORY
         #copy category
-        cat_genre = copy.deepcopy(item_new[89])
+        cat_genre = copy.deepcopy(item_new[index_cat_apps + 7])
         cat_genre.text = cat_genre.text.replace("Games", row["Genre"])
         cat_genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(cat_genre)
 
         # if there is genre2
         if row["Genre2"]:
-            cat_genre2 = copy.deepcopy(item_new[89])
+            cat_genre2 = copy.deepcopy(item_new[index_cat_apps + 7])
             cat_genre2.text = cat_genre2.text.replace("Games", row["Genre"])
             cat_genre2.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
             item_new.append(cat_genre2)
 
 
 
-        #copy tag
         #content rating tag
-        rating = copy.deepcopy(item_new[82])
+        rating = copy.deepcopy(item_new[index_cat_apps])
         rating.text = rating.text.replace("Apps", row["Content_rating"])
         rating.attrib['nicename'] = slugify.slugify(unicode(row["Content_rating"]))
         item_new.append(rating)
 
         #genre tag
-        genre = copy.deepcopy(item_new[82])
+        genre = copy.deepcopy(item_new[index_cat_apps])
         genre.text = genre.text.replace("Apps", row["Genre"])
         genre.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
         item_new.append(genre)
 
         # if there is genre2
         if row["Genre2"]:
-            genre2 = copy.deepcopy(item_new[82])
+            genre2 = copy.deepcopy(item_new[index_cat_apps])
             genre2.text = genre2.text.replace("Apps", row["Genre"])
             genre2.attrib['nicename'] = slugify.slugify(unicode(row["Genre"]))
             item_new.append(genre2)
 
         #name tag
-        name = copy.deepcopy(item_new[82])
+        name = copy.deepcopy(item_new[index_cat_apps])
         name.text = name.text.replace("Apps", row["Item_name"])
         name.attrib['nicename'] = slugify.slugify(unicode(row["Item_name"]))
         item_new.append(name)
 
         #download tag
-        download = copy.deepcopy(item_new[82])
+        download = copy.deepcopy(item_new[index_cat_apps])
         download.text = download.text.replace("Apps", row["Downloads"])
         download.attrib['nicename'] = slugify.slugify(unicode(row["Downloads"]))
         item_new.append(download)
 
         #author tag
-        author = copy.deepcopy(item_new[82])
+        author = copy.deepcopy(item_new[index_cat_apps])
         author.text = author.text.replace("Apps", row["Author"])
         author.attrib['nicename'] = slugify.slugify(unicode(row["Author"]))
         item_new.append(author)
 
         #price tag
-        price = copy.deepcopy(item_new[82])
+        price = copy.deepcopy(item_new[index_cat_apps])
         if "Buy" in row["Price"]:
             price.text = price.text.replace("Apps", "Paid App")
             price.attrib['nicename'] = "paid-app"
@@ -471,14 +480,14 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         #badge tag
         if row["Developer_badge"]:
-            badge = copy.deepcopy(item_new[82])
+            badge = copy.deepcopy(item_new[index_cat_apps])
             badge.text = badge.text.replace("Apps", row["Developer_badge"])
             badge.attrib['nicename'] = slugify.slugify(unicode(row["Developer_badge"]))
             item_new.append(badge)
 
         #remove old category
-        for i in range(82, 90): # from 82 to 89
-            item_new.remove(item_new[82]) # always remove item at index #82
+        for i in range(index_cat_apps, index_cat_apps + 8):
+            item_new.remove(item_new[index_cat_apps])
 
 
         # #debug
@@ -507,10 +516,10 @@ def gen_xml_folder(folder_path, unit="../static/unit.xml",  start_id=1000):
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=1000)
+    # gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=1000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
-    # parseXML_test("../static/unit.xml")
+    parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
