@@ -338,7 +338,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
                            + "<b>Android version compatibility</b>:" + row["Compatibility"] + "\n" \
                            + "<b>App Description</b>:\n" \
                            + decode_str(row['Description']) + "\n" \
-                           + '<a href="' + row['Link'] + '">Source</a>'  + "\n" \
+                           + '<a href="' + row['Link'] + ' target="_blank"' + '">Source</a>' + "\n" \
                            + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
@@ -499,15 +499,15 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
     tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
 
 #generate xml for the whole folder
-def gen_xml_folder(folder_path, start_id):
+def gen_xml_folder(folder_path, unit="../static/unit.xml",  start_id=1000):
     for fil in os.listdir(folder_path):
-        xml_writer(filepath=os.path.join(folder_path, fil),unit="../static/unit.xml", start_id=start_id, start_cmt_id=start_id)
+        xml_writer(filepath=os.path.join(folder_path, fil),unit=unit, start_id=start_id, start_cmt_id=start_id)
         start_id += 2000
 
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    gen_xml_folder("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles_new", start_id=1000)
+    gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=1000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("../static/unit.xml")
