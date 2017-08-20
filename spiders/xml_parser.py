@@ -78,7 +78,7 @@ def csv_reader_test_genre(filepath):
         if fil.endswith("csv"):
             reader = open_csv(os.path.join(filepath, fil))
             for row in reader:
-                genre.append(row["Developer_ID"].replace("&", "and"))
+                genre.append(row["Developer_badge"].replace("&", "and"))
 
     print set(genre)
 
@@ -334,7 +334,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
         # item_new[5].text = decode_str(row['Description'])
         # downloadbox
         item_new[6].text = decode_str(row['Description']) + "\n" \
-                           + '<a href="' + row['Link'] + ' target="_blank"' + '">Source</a>' + "\n" \
+                           + '<a href="' + row['Link'] + '" target="_blank" rel="nofollow">Source</a>' + "\n" \
                            + item_new[6].text.replace("com.facebook.katana", row['package_name'])
         # post id
         item_new[8].text = str(start_id)
@@ -520,18 +520,19 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 #generate xml for the whole folder
 def gen_xml_folder(folder_path, unit="../static/unit.xml",  start_id=1000):
     for fil in os.listdir(folder_path):
-        xml_writer(filepath=os.path.join(folder_path, fil),unit=unit, start_id=start_id, start_cmt_id=start_id)
-        start_id += 2000
+        if os.path.isfile(os.path.join(folder_path, fil)):
+            xml_writer(filepath=os.path.join(folder_path, fil),unit=unit, start_id=start_id, start_cmt_id=start_id)
+            start_id += 2000
 
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=3000)
+    # gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=3000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
-    # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest")
+    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/first10_start1k/")
     #
