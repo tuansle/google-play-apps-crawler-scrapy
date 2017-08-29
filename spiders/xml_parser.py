@@ -78,7 +78,7 @@ def csv_reader_test_genre(filepath):
         if fil.endswith("csv"):
             reader = open_csv(os.path.join(filepath, fil))
             for row in reader:
-                genre.append(row["Developer_badge"].replace("&", "and"))
+                genre.append(row["Downloads"].replace("&", "and"))
 
     print set(genre)
 
@@ -304,8 +304,19 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
     #take current time
     ctime = datetime.now()
 
+    banned_download = ["None", None, "  1 - 5  ", "  5 - 10  ", "  10 - 50  ", "  50 - 100  ", "  100 - 500  ",
+                       "  500 - 1,000  ", "  1,000 - 5,000  ", "  5,000 - 10,000  ", "  10,000 - 50,000  ",
+                       "  50,000 - 100,000  ", "  100,000 - 500,000  ", "  500,000 - 1,000,000  "]
+    count = 0
+
     for row in reader:
         # print row
+
+        # downloads filter
+        if row["Downloads"] in banned_download:
+            continue
+        else:
+            pass
 
         # item manipulation
 
@@ -509,6 +520,7 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
         # increase start_id
         start_id += 1
+        count += 1
 
     # remove first error item
     channel.remove(channel[10])
@@ -516,23 +528,28 @@ def xml_writer(filepath=None, unit="static/unit.xml", start_id=0, start_cmt_id=0
 
     tree_out = etree.ElementTree(root)
     tree_out.write(filepath + ".xml", pretty_print=True, xml_declaration=True, encoding="utf-8")
+    print "file written: ", filepath + ".xml ", count, " records!"
+    return count
 
 #generate xml for the whole folder
 def gen_xml_folder(folder_path, unit="../static/unit.xml",  start_id=1000):
     for fil in os.listdir(folder_path):
-        if os.path.isfile(os.path.join(folder_path, fil)):
-            xml_writer(filepath=os.path.join(folder_path, fil),unit=unit, start_id=start_id, start_cmt_id=start_id)
-            start_id += 2000
+        full_path = os.path.join(folder_path, fil)
+        print full_path
+        if os.path.isfile(full_path) and full_path.endswith(".csv"):
+            count = xml_writer(filepath=os.path.join(folder_path, fil),unit=unit, start_id=start_id, start_cmt_id=start_id)
+            start_id += count
+            print start_id
 
 
 if __name__ == "__main__":
     #generate xml for the whole folder
-    # gen_xml_folder("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest", unit= "static/unit.xml", start_id=3000)
+    gen_xml_folder("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles", unit= "../static/unit.xml", start_id=3000)
 
     # xml_writer(filepath="/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/1.csv",start_id=10000, start_cmt_id=10000)
     # parseXML_test("static/unit.xml")
 
     # spinrewriter_spinner("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/1.csv")
     # csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/old")
-    csv_reader_test_genre("/home/tuan/Code/google-play-apps-crawler-scrapy/csvfile/newest/first10_start1k/")
+    # csv_reader_test_genre("/home/tle/code/google-play-apps-crawler-scrapy/csvfiles")
     #
